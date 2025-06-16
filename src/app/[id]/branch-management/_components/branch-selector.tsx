@@ -14,16 +14,15 @@ interface Branch {
     ubication?: string;
 }
 
-
 interface BranchSelectorProps {
-  userRole?: string
+  userRole?: number
   branches?: Branch[]
   onAddBranch?: () => void
   onSelectBranch?: (branch: Branch) => void
 }
 
 export default function BranchSelector({
-  userRole = "user",
+  userRole = 3,
   branches = [],
   onAddBranch,
   onSelectBranch,
@@ -32,7 +31,7 @@ export default function BranchSelector({
   const [availableBranches, setAvailableBranches] = useState<Branch[]>(branches)
   const router = useRouter()
   useEffect(() => {
-    setIsAdmin(userRole === "admin")
+    setIsAdmin(userRole === 2)
   }, [userRole])
 
   useEffect(() => {
@@ -78,7 +77,7 @@ export default function BranchSelector({
               transition={{ duration: 0.2 }}
             >
               <Card
-                className="cursor-pointer hover:border-[#4589FF]/50 hover:shadow-md transition-all"
+                className="cursor-pointer hover:border-[#25B562] hover:shadow-md transition-all"
                 onClick={() => handleSelectBranch(branch)}
               >
                 <CardContent className="p-6 flex flex-col items-center justify-center text-center">
@@ -92,11 +91,11 @@ export default function BranchSelector({
 
           <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }} transition={{ duration: 0.2 }}>
             <Card
-              className="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white transition-colors h-full"
+              className="cursor-pointer bg-black hover:bg-black text-white transition-colors h-full"
               onClick={handleAddBranch}
             >
               <CardContent className="p-6 flex flex-col items-center justify-center text-center h-full">
-                <div className="rounded-full bg-blue-400 p-3 mb-4">
+                <div className="p-3 mb-4">
                   <Plus className="h-6 w-6" />
                 </div>
                 <h3 className="font-medium text-md">Agregar sucursal</h3>

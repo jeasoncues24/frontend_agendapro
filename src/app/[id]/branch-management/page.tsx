@@ -1,25 +1,26 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import BranchSelector from "./_components/branch-selector"
 import { useBranches } from "@/hooks/useBranchCompany";
+import { LoaderCircle } from "lucide-react";
 
 const mockUserData = {
-  role: "admin",
+  role: 2,
 }
 
 
 interface Props {
-  params: {
-    id: string
-  }
+  params: Promise<{
+    id: string;
+  }>
 }
 
 export default function BranchesPage({ params }: Props) {
 
-  const { id } = params
-  const [userRole, setUserRole] = useState<string>("loading")
+  const { id } = React.use(params);
+  const [userRole, setUserRole] = useState<number>(0)
   const { branches, isLoading, error } = useBranches(id);
   const router = useRouter()
 
@@ -37,10 +38,12 @@ export default function BranchesPage({ params }: Props) {
     router.push(`/${id}/accommodate?branch=${branch.value}`)
   }
 
-  if (userRole === "loading") {
+  if (userRole === 0) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="animate-spin">
+          <LoaderCircle className="h-8 w-8 text-gray-500"/>
+        </div>
       </div>
     )
   }

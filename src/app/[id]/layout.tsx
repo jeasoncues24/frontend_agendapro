@@ -1,3 +1,5 @@
+'use client'
+
 import { AppSidebar } from "@/components/app-sidebar"
 import HeaderComponent from "@/components/header/Header"
 import { CustomToaster } from "@/components/ui/custom-toast"
@@ -5,16 +7,19 @@ import {
   SidebarInset,
   SidebarProvider,
 } from "@/components/ui/sidebar"
+import { usePathname } from 'next/navigation'
 
-export default async function AppAgendaPro({ children }: { children: React.ReactNode }) { 
+export default function AppAgendaPro({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const isBranchManagementRoute = pathname.includes('/branch-management');
 
   return (
     <>
       <SidebarProvider>
-        <AppSidebar  className="fixed"/>
+        {!isBranchManagementRoute && <AppSidebar className="fixed" />}
         <SidebarInset>
           <CustomToaster />
-          <HeaderComponent/>
+          { !isBranchManagementRoute && <HeaderComponent /> }
           {children}
         </SidebarInset>
       </SidebarProvider>

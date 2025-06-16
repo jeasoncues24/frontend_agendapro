@@ -17,6 +17,7 @@ export default function LoginForm() {
     const [agreeToTerms, setAgreeToTerms] = useState(false)
     const [isDisable, setIsDisable] = useState(true);
     const [pending, setPending] = useState(false);
+    const [showTermsError, setShowTermsError] = useState(false);
 
     useEffect(() => {
         if ( email !== '' && password !== '' ) {
@@ -28,6 +29,14 @@ export default function LoginForm() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+
+        if ( !agreeToTerms ) {
+            setShowTermsError(true);
+            return customToast.error({
+                title: "Error al iniciar sesión",
+                description: `Debe aceptar los términos y condiciones`,
+            })
+        }
 
         if ( email === '' || password === '' ) {
             return customToast.error({
@@ -172,12 +181,17 @@ export default function LoginForm() {
             </Button>
 
             {/* Terms and conditions */}
-            <div className="space-y-3">
+            <div className={`space-y-3 border p-2 rounded-xl transition-colors duration-200 ${showTermsError ? 'border-pink-500' : 'border-gray-200'}`}>
                 <div className="flex items-start space-x-3">
                     <Checkbox
                         id="terms"
                         checked={agreeToTerms}
-                        onCheckedChange={(checked) => setAgreeToTerms(checked as boolean)}
+                        onCheckedChange={(checked) => {
+                            setAgreeToTerms(checked as boolean);
+                            if (checked) {
+                                setShowTermsError(false);
+                            }
+                        }}
                         className="mt-0.5 border-2 border-gray-300 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500"
                     />
                     <Label htmlFor="terms" className="text-sm text-gray-600 leading-relaxed">
