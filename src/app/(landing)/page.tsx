@@ -64,7 +64,7 @@ export default function AgendaProLanding() {
                 Iniciar Sesión
               </Link>
               <Link 
-                href="/register" 
+                href="/auth/register" 
                 className="px-4 py-2 text-sm font-medium text-white bg-[#00AF7A] rounded-md hover:bg-[#25B361] transition-colors"
               >
                 Crear Cuenta
