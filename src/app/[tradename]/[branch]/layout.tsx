@@ -2,11 +2,11 @@ import { Metadata } from "next"
 import { CustomToaster } from "@/components/ui/custom-toast"
 
 export const metadata: Metadata = {
-    title: "Autenticación | AgendaPro",
+    title: "AgendaPro",
     description: "Sistema de citas para barberias, spa, etc."
 }
 
-export default async function AuthLayout({
+export default async function TradeNameLayout({
     children
 } : {
     children: React.ReactNode

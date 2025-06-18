@@ -3,24 +3,16 @@
 import * as React from "react"
 import {
   Album,
-  AudioWaveform,
-  BookOpen,
-  Bot,
   Calendar,
   CalendarCheck,
   ChartNoAxesCombined,
   CircleUserRound,
-  Command,
   Frame,
-  GalleryVerticalEnd,
-  Home,
   LayoutDashboard,
   Map,
   PieChart,
   Settings,
-  Settings2,
   SquareActivity,
-  SquareTerminal,
   Store,
   X,
 } from "lucide-react"
@@ -28,7 +20,6 @@ import { Card, CardContent } from "@/components/ui/card"
 import Image from "next/image"
 
 import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
 import { NavUser } from "@/components/nav-user"
 import { TeamSwitcher } from "@/components/team-switcher"
 import {
@@ -39,9 +30,8 @@ import {
   SidebarRail,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { usePathname } from "next/navigation"
+import { usePathname, useParams } from "next/navigation"
 
-// This is sample data.
 const data = {
   user: {
     name: "Arturo Cueva Espinoza",
@@ -58,7 +48,7 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "/dashboard",
+      url: "dashboard",
       icon: LayoutDashboard,
       isActive: true,
     },
@@ -69,7 +59,7 @@ const data = {
       items: [
         {
           title: "Citas",
-          url: "#",
+          url: "quotes",
         },
         {
           title: "Calendario",
@@ -110,57 +100,51 @@ const data = {
       items: [
         {
           title: "Empresa",
-          url: "#"
+          url: "settings/company"
         },
         {
           title: "Sucursales",
-          url: "#"
+          url: "settings/establishment"
         },
         {
           title: "Usuarios",
-          url: "#"
+          url: "settings/users"
         }, 
         {
           title: "Métodos de Pago",
-          url: "#"
+          url: "settings/payment"
         }
       ]
     }
   ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
-  ],
+  
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname()
+  const params = useParams()
+
+  const companyId = params.id as string 
+
   const { state } = useSidebar()
 
   const navMainItems = data.navMain.map((item) => {
+    const fullItemUrl = item.url.startsWith("#") ? item.url : `/admin/${companyId}/${item.url}`
     const isActive = item.url === pathname
     const isParentActive = item.items?.some((subItem) => subItem.url === pathname)
 
     return {
       ...item,
+      url: fullItemUrl,
       isActive: isActive || isParentActive,
-      items: item.items?.map((subItem) => ({
-        ...subItem,
-        isActive: subItem.url === pathname,
-      })),
+      items: item.items?.map((subItem) => {
+        const fullSubUrl = subItem.url.startsWith("#") ? subItem.url : `/admin/${companyId}/${subItem.url}`
+        return {
+          ...subItem,
+          url: fullSubUrl,
+          isActive: pathname === fullSubUrl,
+        }
+      }),
     }
   })
 
@@ -177,7 +161,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {state === 'expanded' && (
           <Card className="bg-gray-50 shadow-none border-none">
             <CardContent className="p-4 flex flex-col items-center text-center">
-              
               <p className="font-semibold text-sm mb-2">¡Nuevas características disponibles!</p>
               <p className="text-xs text-gray-500 mb-4">Echa un vistazo a la vista del panel.</p>
               <Image src="https://antsroute.com/wp-content/uploads/antsroute-software-sitio-reservas-1.jpg" alt="Woman smiling" width={200} height={100} className="rounded-md mb-4" />

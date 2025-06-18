@@ -1,53 +1,42 @@
 'use client';
 
-import { Bell, CircleHelp, LogOut, Search, Settings } from "lucide-react"
+import { Bell, CircleHelp, LogOut, Search, Settings, Eye } from "lucide-react"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../ui/breadcrumb"
 import { Button } from "../ui/button"
 import { Separator } from "../ui/separator"
 import { SidebarTrigger } from "../ui/sidebar"
-import { useState } from "react"
-import { Input } from "../ui/input";
-// import { signOut, useSession } from "next-auth/react";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react"
+import cookies from "js-cookie"
+import { usePathname, useSearchParams } from "next/navigation";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Avatar, AvatarFallback } from "../ui/avatar";
+import { Branch } from "@/types/branch";
+import { slugify } from "@/lib/utils";
 
 function HeaderComponent() {
-    const [isProduction, setIsProduction] = useState(false)
-    const [isModalOpen, setIsModalOpen] = useState(false)
-    const [token, setToken] = useState("");
-    const [isLoading, setIsLoading] = useState<boolean>(false)
-    const [branch, setBranch] = useState([]);
-    const router = useRouter()
+    const [branch, setBranch] = useState<Branch | null>(null);
+    const [company, setCompany] = useState<string>("");
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
 
-    // const { data: session, status } = useSession();
+    const [isUser, setIsUser] = useState("");
 
 
-    const handleSwitchChange = () => {
-        if (!isProduction) {
-            setIsModalOpen(true)
-        } else {
-            setIsProduction(false)
+    useEffect(() => {
+        const user = cookies.get("user");
+        if (user) {
+          const data = JSON.parse(user ?? "");
+          const userBranch = data.company?.firstEstablishment || null;
+          const companyIdForUser = data.company?.trade_name || "";
+          setCompany(companyIdForUser)
+          setBranch(userBranch);
+          setIsUser(data.name);
         }
-    }
+       
+    }, [pathname, searchParams]);
 
-    const handleConfirmProduction = () => {
-        setIsProduction(true)
-        setIsModalOpen(false)
-    }
-    const logoutSession = async () => {
-        setIsLoading(true)
-        try {
-            // await signOut({ redirect: false })
-            router.push("/auth/login")
-        } catch (error) {
-            console.error("Logout failed", error)
-        } finally {
-            setIsLoading(false)
-        }
-    }
+ 
 
-      
     return (
         <header className="flex h-16 shrink-0 items-center justify-between gap-2 border-b px-4 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
             <div className="flex items-center gap-2 px-4">
@@ -57,14 +46,25 @@ function HeaderComponent() {
                     <BreadcrumbList>
                         <BreadcrumbItem className="hidden md:block">
                             <BreadcrumbLink href="#">
-                                Configuración
+                                    {branch?.name || 'Seleccionar sucursal'}
                             </BreadcrumbLink>
                         </BreadcrumbItem>
                         <BreadcrumbSeparator className="hidden md:block" />
                         <BreadcrumbItem className="hidden md:block">
-                            <BreadcrumbLink href="#">
-                                Métodos de Pago
-                            </BreadcrumbLink>
+                            <div className="flex items-center gap-2">
+                              
+                                {branch && (
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="h-7 px-2"
+                                        onClick={() => window.open(`/${slugify(company)}/${slugify(branch.name)}`, '_blank')}
+                                    >
+                                        <Eye className="w-4 h-4 mr-1" />
+                                        Ver página
+                                    </Button>
+                                )}
+                            </div>
                         </BreadcrumbItem>
                         <BreadcrumbItem>
                             <BreadcrumbPage>
@@ -92,33 +92,12 @@ function HeaderComponent() {
                 </Popover>
 
                
-                {/* { session ? (
-                   <>
-                    { session.user.image ? (
-                    <div className="relative w-6 h-6 rounded-full overflow-hidden">
-                            <Image
-                            src={session.user?.image || '/placeholder.svg'}
-                            alt={session.user?.name || 'User avatar'}
-                            width={24}
-                            height={24}
-                            className="object-cover"
-                        />
-                        
-                    </div>
-                    ) : (
-                       <div className="relative w-8 h-8 mx-auto rounded-full p-1 bg-[#F3729F] text-black font-semibold text-md text-center">{session.user.name?.charAt(0)}</div>
-                    )}
-                    <Button 
-                        onClick={() => logoutSession()}
-                        variant="ghost" size="icon"
-                    >
-                        <LogOut className="h-4 w-4" />
-                    </Button>
-                   </>
+                <div className="flex justify-start gap-4 items-center">
+                    <Avatar className="h-10 w-10 cursor-pointer ">
+                      <AvatarFallback className="font-semibold bg-[#DCFCE7] text-green-500 border border-green-300">{isUser?.charAt(0).toUpperCase() || ''}</AvatarFallback>
+                    </Avatar>
                     
-                ) : ( */}
-                    <div className="animate-pulse rounded-full bg-gray-300 p-2 w-6 h-6"></div>
-                {/* )} */}
+                </div>
 
                 
 

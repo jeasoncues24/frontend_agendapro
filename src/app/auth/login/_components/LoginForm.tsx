@@ -64,14 +64,9 @@ export default function LoginForm() {
             });
 
             const data = await response.json();
-            if (!response.ok) {
+
+            if (response.status === 500) {
                 setPending(false);
-                if (data.status === 'error') {
-                    return customToast.error({
-                        title: "Error al iniciar sesión",
-                        description: `${data.message}`,
-                    })
-                }
                 return customToast.error({
                     title: "Error al iniciar sesión",
                     description: `${data.message}, vuelve a intentarlo`,
@@ -95,9 +90,9 @@ export default function LoginForm() {
                 window.location.replace('/admin/cpanel/dashboard');
             } else if (uuid.company && uuid.company.id) {
                 if ( uuid.role_id === 2 || uuid.role_id === 3 ) {
-                    window.location.replace(`/${uuid.company.id}/branch-management`);
+                    window.location.replace(`/admin/${uuid.company.id}/branch-management`);
                 } else {
-                    window.location.replace(`/${uuid.company.id}/cash`);
+                    window.location.replace(`/admin/${uuid.company.id}/cash`);
                 }
             }
         } catch ( error ) {

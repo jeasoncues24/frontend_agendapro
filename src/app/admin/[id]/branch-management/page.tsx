@@ -31,11 +31,11 @@ export default function BranchesPage({ params }: Props) {
   }, [])
 
   const handleAddBranch = () => {
-    router.push(`/${id}/branch-management/new`)
+    router.push(`/admin/${id}/branch-management/new`)
   }
 
   const handleSelectBranch = (branch: { value: string }) => {
-    router.push(`/${id}/accommodate?branch=${branch.value}`)
+    router.push(`/admin/${id}/quotes?branch=${branch.value}`)
   }
 
   if (userRole === 0) {
@@ -52,7 +52,12 @@ export default function BranchesPage({ params }: Props) {
     <div className="container mx-auto py-8">
       <BranchSelector
         userRole={userRole}
-        branches={branches}
+        branches={branches?.map(branch => ({
+          value: branch.id,
+          label: branch.name,
+          name: branch.name,
+          ubication: branch.address
+        }))}
         onAddBranch={handleAddBranch}
         onSelectBranch={handleSelectBranch}
       />

@@ -85,9 +85,9 @@ export function NavMain({
                             : "hover:bg-green-100 hover:text-green-500"
                         }
                       >
-                        <a href={subItem.url}>
+                        <Link href={subItem.url}>
                           <span>{subItem.title}</span>
-                        </a>
+                        </Link>
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
                   ))}
