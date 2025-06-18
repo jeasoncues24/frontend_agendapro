@@ -47,14 +47,12 @@ export default function CompanyConfigComponent() {
     color_primary: companyData?.color_primary || "#000000"
   })
 
-  // Actualizar currentLogoPath cuando cambie companyData
   useEffect(() => {
     if (companyData?.logo_path) {
       setCurrentLogoPath(companyData.logo_path);
     }
   }, [companyData]);
 
-  // Actualizar formData cuando cambie companyData
   useEffect(() => {
     if (companyData) {
       setFormData(prev => ({
@@ -106,13 +104,6 @@ export default function CompanyConfigComponent() {
         formDataToSend.append('logo', logo);
       }
       
-      console.log('Datos a actualizar:', {
-        identification: formData.identification || companyData.identification,
-        bussines_name: formData.businessName || companyData.bussines_name,
-        phone: formData.phone || companyData.phone,
-        address: formData.address || companyData.address,
-        hasNewLogo: !!logo
-      });
 
       // Actualizamos la compañía con FormData
       await updateCompany(formDataToSend);
@@ -122,7 +113,6 @@ export default function CompanyConfigComponent() {
         description: "La información de la empresa se ha actualizado correctamente"
       });
     } catch (error) {
-      console.error('Error updating company:', error);
       customToast.error({
         title: "Error al actualizar",
         description: "No se pudo actualizar la información de la empresa. Por favor, inténtalo de nuevo."
@@ -417,7 +407,7 @@ export default function CompanyConfigComponent() {
         <Button 
           onClick={handleUpdate}
           disabled={isUpdating}
-          className="bg-[#25B562] hover:bg-[#25B562] text-white px-8"
+          className="text-white px-8"
         >
           {isUpdating ? (
             <>
