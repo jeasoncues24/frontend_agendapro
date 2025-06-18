@@ -95,16 +95,13 @@ export default function CompanyConfigComponent() {
     try {
       setIsUpdating(true);
       
-      // Creamos un FormData para enviar los datos
       const formDataToSend = new FormData();
       
-      // Agregamos los campos básicos
       formDataToSend.append('identification', formData.identification || companyData.identification);
       formDataToSend.append('bussines_name', formData.businessName || companyData.bussines_name);
       formDataToSend.append('phone', formData.phone || companyData.phone);
       formDataToSend.append('address', formData.address || companyData.address);
 
-      // Si hay un nuevo logo, lo agregamos al FormData
       if (logo) {
         formDataToSend.append('logo', logo);
       }

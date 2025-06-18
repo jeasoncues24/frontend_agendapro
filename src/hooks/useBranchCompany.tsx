@@ -2,19 +2,16 @@ import { getBranchForCompany } from "@/services/branches/branchService";
 import { useState, useEffect } from "react";
 import { Branch } from "@/types/branch";
 
-export const useBranches = (companyId: string) => {
+export const useBranches = (companyId: string, refreshKey?: number) => {
     const [branches, setBranches] = useState<Branch[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchBranches = async () => {
-            console.log("Iniciando fetchBranches con companyId:", companyId);
-            try {
-                setIsLoading(true);
-                const data = await getBranchForCompany(companyId);
-                console.log("Respuesta de getBranchForCompany:", data);
-
+        if (!companyId) return;
+        setIsLoading(true);
+        getBranchForCompany(companyId)
+            .then((data) => {
                 if (data && data.branchCompany && Array.isArray(data.branchCompany)) {
                     const mappedBranches = data.branchCompany.map((branch: any) => ({
                         id: branch.id,
@@ -26,29 +23,19 @@ export const useBranches = (companyId: string) => {
                         created_at: branch.created_at || '',
                         updated_at: branch.updated_at || '',
                     }));
-                    console.log("Branches mapeados:", mappedBranches);
                     setBranches(mappedBranches);
+                    setError(null);
                 } else {
                     console.log("No se encontraron sucursales en la respuesta");
                     setError("No se encontraron sucursales.");
                 }
-            } catch (err: any) {
+            })
+            .catch((err) => {
                 console.error("Error en fetchBranches:", err);
                 setError(err.message || "Error al obtener las sucursales.");
-            } finally {
-                console.log("Finalizando fetchBranches, estableciendo isLoading a false");
-                setIsLoading(false);
-            }
-        };
-
-        if (companyId) {
-            console.log("companyId existe, llamando a fetchBranches");
-            fetchBranches();
-        } else {
-            console.log("companyId no existe");
-            setIsLoading(false);
-        }
-    }, [companyId]);
+            })
+            .finally(() => setIsLoading(false));
+    }, [companyId, refreshKey]);
     
 
 

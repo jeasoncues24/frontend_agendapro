@@ -3,11 +3,10 @@
 import cookies from "js-cookie";
 
 export const getBranchForCompany = async (companyId: string) => {
-    console.log("Iniciando getBranchForCompany con companyId:", companyId);
     try {
         const endpoint = process.env.NODE_ENV === 'production'
-                    ? process.env.NEXT_PUBLIC_ENDPOINT_API_PROD
-                    : process.env.NEXT_PUBLIC_ENDPOINT_API_DEV;
+            ? process.env.NEXT_PUBLIC_ENDPOINT_API_PROD
+            : process.env.NEXT_PUBLIC_ENDPOINT_API_DEV;
 
         console.log("Endpoint:", endpoint);
 
@@ -21,8 +20,6 @@ export const getBranchForCompany = async (companyId: string) => {
             companyId
         }
 
-        console.log("Enviando petición a:", `${endpoint}/branches/company`);
-        console.log("Parámetros:", params);
 
         const response = await fetch(`${endpoint}/branches/company`, {
             method: 'POST',
@@ -33,19 +30,15 @@ export const getBranchForCompany = async (companyId: string) => {
             body: JSON.stringify(params)
         })
 
-        console.log("Respuesta recibida:", response.status, response.statusText);
 
         if (!response.ok) {
             const errorText = await response.text();
-            console.error("Error en la respuesta:", errorText);
             throw new Error(`Error ${response.status}: ${response.statusText}`);
         }
 
         const data = await response.json()
-        console.log("Datos recibidos:", data);
 
         if (!data.data) {
-            console.error("No hay datos en la respuesta");
             throw new Error('No se recibieron datos de la API');
         }
 
@@ -54,63 +47,89 @@ export const getBranchForCompany = async (companyId: string) => {
         }
 
     } catch (err: any) {
-        console.error("Error en getBranchForCompany:", err);
-        throw err; // Propagar el error para que useBranches pueda manejarlo
+        throw err;
     }
 }
 
-export const updateBranch = async (branchId: string, branchData: FormData | {
-  name: string;
-  ubication: string;
-  banner_path: string | null;
-}) => {
-    console.log("Iniciando updateBranch con:", { branchId, branchData });
-    try {
-        const endpoint = process.env.NODE_ENV === 'production'
-                    ? process.env.NEXT_PUBLIC_ENDPOINT_API_PROD
-                    : process.env.NEXT_PUBLIC_ENDPOINT_API_DEV;
+export const updateBranch = async (
+    branchId: string,
+    branchData:
+        | FormData
+        | {
+            name: string
+            ubication: string
+            banner_path: string | null
+        },
+) => {
+    console.log("=== INICIO updateBranch ===")
+    console.log("Branch ID:", branchId)
+    console.log("Tipo de datos:", branchData instanceof FormData ? "FormData" : "Object")
 
-        const token = cookies.get('authtoken');
+    try {
+        const endpoint =
+            process.env.NODE_ENV === "production"
+                ? process.env.NEXT_PUBLIC_ENDPOINT_API_PROD
+                : process.env.NEXT_PUBLIC_ENDPOINT_API_DEV
+
+        console.log("Endpoint:", endpoint)
+
+        const token = cookies.get("authtoken")
         if (!token) {
-            throw new Error('Token de autenticación no disponible.');
+            throw new Error("Token de autenticación no disponible.")
         }
 
         const headers: HeadersInit = {
-            'Authorization': `Bearer ${token}`,
-        };
-
-        // Si no es FormData, convertimos a JSON
-        if (!(branchData instanceof FormData)) {
-            headers['Content-Type'] = 'application/json';
+            Authorization: `Bearer ${token}`,
         }
+
+        let body: FormData | string
+
+        if (branchData instanceof FormData) {
+            // Es FormData - no agregar Content-Type para que el browser lo maneje automáticamente
+            body = branchData
+            console.log("Enviando como FormData")
+
+            // Debug: mostrar contenido del FormData
+            console.log("Contenido del FormData:")
+            for (const [key, value] of branchData.entries()) {
+                if (value instanceof File) {
+                    console.log(`${key}: File(${value.name}, ${value.size} bytes, ${value.type})`)
+                } else {
+                    console.log(`${key}: ${value}`)
+                }
+            }
+        } else {
+            // Es objeto plano - enviar como JSON
+            headers["Content-Type"] = "application/json"
+            body = JSON.stringify(branchData)
+            console.log("Enviando como JSON:", body)
+        }
+
 
         const response = await fetch(`${endpoint}/branches/${branchId}`, {
-            method: 'PUT',
+            method: "PUT",
             headers,
-            body: branchData instanceof FormData ? branchData : JSON.stringify(branchData)
-        });
+            body,
+        })
+
 
         if (!response.ok) {
-            const errorText = await response.text();
-            console.error("Error en la respuesta:", errorText);
-            throw new Error(`Error ${response.status}: ${response.statusText}`);
+            const errorText = await response.text()
+            throw new Error(`Error ${response.status}: ${response.statusText} - ${errorText}`)
         }
 
-        const data = await response.json();
-        console.log("Respuesta de actualización:", data);
-        return data;
-
+        const data = await response.json()
+        return data
     } catch (err: any) {
-        console.error("Error en updateBranch:", err);
-        throw err;
+        throw err
     }
 }
 
 export const getBranchDetails = async (branchId: string) => {
     try {
         const endpoint = process.env.NODE_ENV === 'production'
-                    ? process.env.NEXT_PUBLIC_ENDPOINT_API_PROD
-                    : process.env.NEXT_PUBLIC_ENDPOINT_API_DEV;
+            ? process.env.NEXT_PUBLIC_ENDPOINT_API_PROD
+            : process.env.NEXT_PUBLIC_ENDPOINT_API_DEV;
 
         const token = cookies.get('authtoken');
         if (!token) {
@@ -133,7 +152,7 @@ export const getBranchDetails = async (branchId: string) => {
         }
 
         const responseData = await response.json();
-        
+
         if (!responseData.status || !responseData.data) {
             throw new Error("Formato de respuesta inválido");
         }
@@ -144,3 +163,29 @@ export const getBranchDetails = async (branchId: string) => {
         throw err;
     }
 }
+
+export const deleteBranch = async (branchId: string) => {
+    const endpoint = process.env.NODE_ENV === 'production'
+        ? process.env.NEXT_PUBLIC_ENDPOINT_API_PROD
+        : process.env.NEXT_PUBLIC_ENDPOINT_API_DEV;
+
+    const token = cookies.get('authtoken');
+    if (!token) {
+        throw new Error('Token de autenticación no disponible.');
+    }
+
+    const response = await fetch(`${endpoint}/branches/${branchId}`, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+    });
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Error ${response.status}: ${response.statusText} - ${errorText}`);
+    }
+
+    return await response.json();
+};

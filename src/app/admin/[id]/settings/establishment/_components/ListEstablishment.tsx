@@ -17,8 +17,10 @@ import {
 import { useBranches } from "@/hooks/useBranchCompany"
 import EditBranchModal from "./EditBranchModal"
 import { toast } from "sonner"
-import { updateBranch, getBranchDetails } from "@/services/branches/branchService"
+import { updateBranch, getBranchDetails, deleteBranch } from "@/services/branches/branchService"
 import { customToast } from "@/components/ui/custom-toast"
+import { useRouter } from "next/navigation"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 
 interface Inquiry {
   id: string
@@ -37,13 +39,15 @@ interface Props {
 }
 
 export default function ListEstablishment({ id }: Props) {
+  const [refreshKey, setRefreshKey] = useState(0);
+  const { branches, isLoading, error } = useBranches(id, refreshKey);
   const [searchTerm, setSearchTerm] = useState("")
-  const [activeTab, setActiveTab] = useState("all")
   const [currentPage, setCurrentPage] = useState(1)
-  const { branches, isLoading, error } = useBranches(id);
-  const [dateRange, setDateRange] = useState("Jan 6, 2024 – Jan 13, 2024")
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [selectedBranch, setSelectedBranch] = useState<any>(null)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [branchToDelete, setBranchToDelete] = useState<any>(null);
+  const router = useRouter()
 
   const openEditModal = async (branch: any) => {
     try {
@@ -68,16 +72,22 @@ export default function ListEstablishment({ id }: Props) {
         return;
       }
 
-      await updateBranch(selectedBranch.id, {
-        name: branchData.name,
-        ubication: branchData.ubication,
-        banner_path: branchData.banner_path
-      });
+      if (branchData instanceof FormData) {
+        await updateBranch(selectedBranch.id, branchData)
+      } else {
+        await updateBranch(selectedBranch.id, {
+          name: branchData.name,
+          ubication: branchData.ubication,
+          banner_path: branchData.banner_path,
+        })
+      }
 
       customToast.success({
         title: "Operación exitosa",
         description: "Sucursal actualizada correctamente"
       });
+      setRefreshKey((k) => k + 1);
+      setIsEditModalOpen(false);
     } catch (error) {
       customToast.error({
         title: "Error",
@@ -91,6 +101,26 @@ export default function ListEstablishment({ id }: Props) {
     setSelectedBranch(null)
     setIsEditModalOpen(false)
   }
+
+  const handleDeleteBranch = async () => {
+    if (!branchToDelete) return;
+    try {
+      await deleteBranch(branchToDelete.id);
+      customToast.success({
+        title: "Sucursal eliminada",
+        description: `La sucursal '${branchToDelete.name}' fue eliminada correctamente.`
+      });
+      setRefreshKey((k) => k + 1);
+    } catch (error) {
+      customToast.error({
+        title: "Error",
+        description: `No se pudo eliminar la sucursal. ${error}`
+      });
+    } finally {
+      setIsDeleteModalOpen(false);
+      setBranchToDelete(null);
+    }
+  };
 
   const filteredBranches = branches.filter((branch) => {
     const matchesSearch = branch.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -133,7 +163,7 @@ export default function ListEstablishment({ id }: Props) {
             <Download className="w-4 h-4" />
             <span>Exportar</span>
           </Button>
-          <Button className="bg-[#25B562] hover:bg-[#25B562] flex items-center space-x-2">
+          <Button className="flex items-center space-x-2">
             <Plus className="w-4 h-4" />
             <span>Crear sucursal</span>
           </Button>
@@ -198,7 +228,7 @@ export default function ListEstablishment({ id }: Props) {
                           <DropdownMenuItem onClick={() => openEditModal(branch)}>
                             Editar
                           </DropdownMenuItem>
-                          <DropdownMenuItem className="text-red-600">
+                          <DropdownMenuItem className="text-red-600" onClick={() => { setBranchToDelete(branch); setIsDeleteModalOpen(true); }}>
                             Eliminar
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -241,6 +271,23 @@ export default function ListEstablishment({ id }: Props) {
         onSave={handleEditBranch}
         branch={selectedBranch}
       />
+
+      <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>¿Eliminar sucursal?</DialogTitle>
+          </DialogHeader>
+          <p className="text-gray-600">¿Estás seguro de que deseas eliminar la sucursal <b>{branchToDelete?.name}</b>? Esta acción no se puede deshacer.</p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDeleteModalOpen(false)}>
+              Cancelar
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteBranch}>
+              Eliminar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

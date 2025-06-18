@@ -44,15 +44,35 @@ export default function EditBranchModal({ isOpen, onClose, onSave, branch }: Edi
   const [previewImage, setPreviewImage] = useState<string | null>(null)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [logo, setLogo] = useState<File | null>(null)
+
+  useEffect(() => {
+    if (!isOpen) {
+      // Limpiar estados cuando se cierra el modal
+      setPreviewImage(null);
+      setSelectedFile(null);
+      setFormData({
+        name: "",
+        ubication: "",
+        banner_path: null,
+      });
+      setErrors({});
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     if (branch) {
+      console.log("Branch data in modal:", branch);
       setFormData({
         name: branch.name || "",
         ubication: branch.ubication || "",
         banner_path: branch.banner_path,
       });
-      setPreviewImage(branch.banner_path);
+      if (branch.banner_path) {
+        setPreviewImage(`${process.env.NEXT_PUBLIC_ROUTE_UPLOADS_DEV}${branch.banner_path}`);
+      } else {
+        setPreviewImage(null);
+      }
     }
   }, [branch]);
 
@@ -118,7 +138,15 @@ export default function EditBranchModal({ isOpen, onClose, onSave, branch }: Edi
       
       if (selectedFile) {
         formDataToSend.append('banner', selectedFile)
+      } else if (branch?.banner_path) {
+        formDataToSend.append('banner_path', branch.banner_path)
       }
+
+      console.log('Datos a actualizar', {
+        name: formData.name,
+        ubication: formData.ubication,
+        banner_path: branch?.banner_path
+      })
 
       await onSave(formDataToSend)
       onClose()
@@ -127,6 +155,16 @@ export default function EditBranchModal({ isOpen, onClose, onSave, branch }: Edi
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleRemoveImage = () => {
+    setPreviewImage(null);
+    setSelectedFile(null);
+    setFormData(prev => ({
+      ...prev,
+      banner_path: null
+    }));
+
   }
 
   return (
@@ -144,17 +182,18 @@ export default function EditBranchModal({ isOpen, onClose, onSave, branch }: Edi
               {previewImage ? (
                 <div className="relative w-full h-full">
                   <Image
-                    src={previewImage}
+                    src={previewImage || `${process.env.NEXT_PUBLIC_ROUTE_UPLOADS_DEV}${branch?.banner_path}`}
                     alt="Banner preview"
                     fill
                     className="object-cover"
+                    onError={(e) => {
+                      console.error('Error loading image:', e);
+                      console.log('Image path:', `${process.env.NEXT_PUBLIC_ROUTE_UPLOADS_DEV}${branch?.banner_path}`);
+                    }}
                   />
                   <button
                     type="button"
-                    onClick={() => {
-                      setPreviewImage(null)
-                      setFormData(prev => ({ ...prev, banner_path: null }))
-                    }}
+                    onClick={handleRemoveImage}
                     className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
                   >
                     <X className="w-4 h-4" />
