@@ -15,7 +15,7 @@ export default function AppAgendaPro({ children }: { children: React.ReactNode }
 
   return (
     <>
-      <SidebarProvider>
+      <SidebarProvider defaultOpen={false}>
         {!isBranchManagementRoute && <AppSidebar className="fixed" />}
         <SidebarInset>
           <CustomToaster />
