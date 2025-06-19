@@ -4,7 +4,7 @@ import { getUsers } from "@/services/user.service";
 export const useUsers = (
   companyId: string,
   establishmentId?: string,
-  refreshKey?: number //
+  refreshKey?: number 
 ) => {
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);

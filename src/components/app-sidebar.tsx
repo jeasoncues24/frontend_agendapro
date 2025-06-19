@@ -74,8 +74,18 @@ const data = {
     },
     {
       title: "Servicios",
-      url: "services",
-      icon: SquareActivity
+      url: "#",
+      icon: SquareActivity,
+      items: [
+        {
+          title: "Categoria de servicios",
+          url: "category-services"
+        },
+        {
+          title: "Servicios",
+          url: "services-for-clients"
+        }
+      ]
     },
     {
       title: "Productos",

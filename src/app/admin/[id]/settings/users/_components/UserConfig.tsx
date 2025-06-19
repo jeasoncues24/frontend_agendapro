@@ -12,11 +12,6 @@ import {
   Download,
   Plus,
   MoreHorizontal,
-  CheckCircle,
-  Circle,
-  Clock,
-  AlertCircle,
-  FileText,
 } from "lucide-react"
 import { useUsers } from "@/hooks/useUsers"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet"
@@ -44,35 +39,6 @@ export default function UserConfigComponent({ companyId, establishmentId }: { co
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "Success":
-        return <CheckCircle className="w-4 h-4 text-green-500" />
-      case "Processing":
-        return <Clock className="w-4 h-4 text-yellow-500" />
-      case "On hold":
-        return <AlertCircle className="w-4 h-4 text-red-500" />
-      case "Drafts":
-        return <FileText className="w-4 h-4 text-gray-500" />
-      default:
-        return <Circle className="w-4 h-4 text-gray-400" />
-    }
-  }
-
-  const getStatusBadge = (status: string) => {
-    const variants = {
-      Processing: "bg-yellow-100 text-yellow-800 border-yellow-200",
-      Success: "bg-green-100 text-green-800 border-green-200",
-      "On hold": "bg-red-100 text-red-800 border-red-200",
-      Drafts: "bg-gray-100 text-gray-800 border-gray-200",
-    }
-
-    return (
-      <Badge variant="outline" className={variants[status as keyof typeof variants]}>
-        {status}
-      </Badge>
-    )
-  }
 
   const handleCreateUser = async (data: any) => {
     try {
@@ -165,7 +131,6 @@ export default function UserConfigComponent({ companyId, establishmentId }: { co
                       <span className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-blue-400 text-white font-bold">
                         {(user.name && user.name.length > 0) ? user.name.charAt(0).toUpperCase() : "U"}
                       </span>
-                      <span className="font-medium text-gray-900">{user.name}</span>
                     </div>
                   </TableCell>
                   <TableCell className="text-gray-600">{user.name}</TableCell>

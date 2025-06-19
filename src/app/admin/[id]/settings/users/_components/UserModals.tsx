@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 const ROLES: Record<number, string> = {
   1: "Super Admin",
@@ -245,4 +244,3 @@ export function DeleteUserModal({ open, onClose, onDelete, user }: DeleteUserMod
   );
 }
 
-// Puedes agregar EditUserModal y DeleteUserModal siguiendo el mismo patrón, usando los props necesarios y la lógica adecuada. 
