@@ -61,9 +61,6 @@ export const updateBranch = async (
             banner_path: string | null
         },
 ) => {
-    console.log("=== INICIO updateBranch ===")
-    console.log("Branch ID:", branchId)
-    console.log("Tipo de datos:", branchData instanceof FormData ? "FormData" : "Object")
 
     try {
         const endpoint =
@@ -71,7 +68,6 @@ export const updateBranch = async (
                 ? process.env.NEXT_PUBLIC_ENDPOINT_API_PROD
                 : process.env.NEXT_PUBLIC_ENDPOINT_API_DEV
 
-        console.log("Endpoint:", endpoint)
 
         const token = cookies.get("authtoken")
         if (!token) {
@@ -85,12 +81,7 @@ export const updateBranch = async (
         let body: FormData | string
 
         if (branchData instanceof FormData) {
-            // Es FormData - no agregar Content-Type para que el browser lo maneje automáticamente
             body = branchData
-            console.log("Enviando como FormData")
-
-            // Debug: mostrar contenido del FormData
-            console.log("Contenido del FormData:")
             for (const [key, value] of branchData.entries()) {
                 if (value instanceof File) {
                     console.log(`${key}: File(${value.name}, ${value.size} bytes, ${value.type})`)
@@ -99,10 +90,8 @@ export const updateBranch = async (
                 }
             }
         } else {
-            // Es objeto plano - enviar como JSON
             headers["Content-Type"] = "application/json"
             body = JSON.stringify(branchData)
-            console.log("Enviando como JSON:", body)
         }
 
 

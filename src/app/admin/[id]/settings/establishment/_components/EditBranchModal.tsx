@@ -62,7 +62,6 @@ export default function EditBranchModal({ isOpen, onClose, onSave, branch }: Edi
 
   useEffect(() => {
     if (branch) {
-      console.log("Branch data in modal:", branch);
       setFormData({
         name: branch.name || "",
         ubication: branch.ubication || "",
@@ -98,14 +97,13 @@ export default function EditBranchModal({ isOpen, onClose, onSave, branch }: Edi
 
       // Crear una URL temporal para la previsualización
       const previewUrl = URL.createObjectURL(file)
-      setPreviewImage(previewUrl)
-      setSelectedFile(file)
-      setFormData(prev => ({ ...prev, banner_path: null }))
-      setErrors(prev => ({ ...prev, banner_path: "" }))
-    }
+        setPreviewImage(previewUrl)
+        setSelectedFile(file)
+        setFormData(prev => ({ ...prev, banner_path: null }))
+        setErrors(prev => ({ ...prev, banner_path: "" }))
+      }
   }
 
-  // Limpiar la URL temporal cuando se desmonte el componente
   useEffect(() => {
     return () => {
       if (previewImage && previewImage.startsWith('blob:')) {
@@ -141,12 +139,6 @@ export default function EditBranchModal({ isOpen, onClose, onSave, branch }: Edi
       } else if (branch?.banner_path) {
         formDataToSend.append('banner_path', branch.banner_path)
       }
-
-      console.log('Datos a actualizar', {
-        name: formData.name,
-        ubication: formData.ubication,
-        banner_path: branch?.banner_path
-      })
 
       await onSave(formDataToSend)
       onClose()

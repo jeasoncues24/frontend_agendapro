@@ -66,7 +66,7 @@ export function CreateCategoryServiceModal({ open, onClose, onCreate, companyId,
                     </div>
                     <div>
                         <Input name="description" placeholder="Descripcion" value={form.description} onChange={handleChange} />
-                        {errors.email && <p className="text-red-500 text-xs mt-1">{errors.description}</p>}
+                        {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description}</p>}
                     </div>
                    
                 </div>
@@ -91,7 +91,6 @@ interface EditCategoryModalProps {
 
 export function EditCategoryModal({ open, onClose, onEdit, category, companyId, establishmentId }: EditCategoryModalProps ) {
 
-    console.log(category)
     const [form, setForm] = useState({
         name: "",
         description:  "",

@@ -80,3 +80,18 @@ const getEndpoint = () =>
         if (!response.ok) throw new Error(await response.text());
         return await response.json();
     }
+
+    export const listCategoriesActives = async ( establishment_id: string ) => {
+        const endpoint = getEndpoint();
+        const token = getToken();
+        const response = await fetch(`${endpoint}/category-service/actives/${establishment_id}`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "applicaation/json"
+            }
+        });
+
+        if (!response.ok) throw new Error(await response.text());
+        return await response.json();
+    }
