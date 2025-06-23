@@ -7,7 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useService } from "@/hooks/useService";
-import { CheckCircle, CheckCircle2, Circle, Download, MoreHorizontal, Plus, Search } from "lucide-react";
+import { CheckCircle, CheckCircle2, Circle, Download, MoreHorizontal, Plus, Search, Package } from "lucide-react";
 import { useState } from "react";
 import { CreateServiceModal, DeleteServiceModal, EditServiceModal } from "./ServicesModals";
 import { customToast } from "@/components/ui/custom-toast";
@@ -137,99 +137,132 @@ export default function ServicesForClientsList({ companyId, establishmentId }: {
                         </h3>
                     </div>
 
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="w-4"></TableHead>
-                                <TableHead>Nombre</TableHead>
-                                <TableHead>Duración</TableHead>
-                                <TableHead>Precio</TableHead>
-                                <TableHead>Categoria</TableHead>
-                                <TableHead>Estado</TableHead>
-                                <TableHead className="w-4"></TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            { filteredServices.map(( service: any ) => (
-                                <TableRow
-                                    key={service.id}
-                                    className="cursor-pointer hover:bg-gray-100"
-                                  
+                    {filteredServices.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-16 px-6">
+                            <div className="flex items-center justify-center mb-6">
+                                <Image 
+                                    src="/images/empty.png"
+                                    alt="empty"
+                                    height={200}
+                                    width={200}
+                                />
+                            </div>
+                            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                                {searchTerm ? "No se encontraron servicios" : "No tienes servicios aún"}
+                            </h3>
+                            <p className="text-gray-600 text-center mb-8 max-w-md">
+                                {searchTerm 
+                                    ? "No se encontraron servicios que coincidan con tu búsqueda. Intenta con otros términos."
+                                    : "Comienza creando tu primer servicio para ofrecer a tus clientes. Es fácil y rápido."
+                                }
+                            </p>
+                            {!searchTerm && (
+                                <Button 
+                                    className="flex items-center space-x-2" 
+                                    onClick={() => setIsCreateModalOpen(true)}
                                 >
-                                    <TableCell>
-                                        <div className="flex items-center gap-2">
-                                            {service.image && (
-                                                <Image
-                                                    src={`${process.env.NEXT_PUBLIC_ROUTE_UPLOADS_DEV}${service.image}`}
-                                                    alt={service.name}
-                                                    width={40}
-                                                    height={40}
-                                                    className="rounded object-cover border"
-                                                    style={{ minWidth: 45, minHeight: 45, maxWidth: 45, maxHeight: 45 }}
-                                                />
-                                            )}
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>{service.name}</TableCell>
-                                    <TableCell>{service.duration} hora(s)</TableCell>
-                                    <TableCell>S/ {service.price}</TableCell>
-                                    <TableCell>
-                                        <Badge className={getBadgeColor(service.category.name)}>
-                                            {service.category.name}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell>
-                                        {service.status === 1 ? (
-                                            <Badge className="bg-green-100 text-green-500 border-green-200">Activo</Badge>
-                                            ) : (
-                                            <Badge className="bg-red-100 text-red-500 border-red-200">Inactivo</Badge>
-                                        )}
-                                    </TableCell>
-                                    <TableCell>
-                                        <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="ghost" size="sm">
-                                            <MoreHorizontal className="w-4 h-4" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuItem
-                                                onClick={() => {
-                                                    setSelectedService(service);
-                                                    setIsSheetOpen(true);
-                                                }}
-                                            >
-                                                Ver
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => {
-                                                setSelectedService(service);
-                                                setIsEditModalOpen(true);
-                                            }}>Editar</DropdownMenuItem>
-                                            <DropdownMenuItem className="text-red-600" onClick={() => { setSelectedService(service); setIsDeleteModalOpen(true); }}>Eliminar</DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-
-                    <div className="flex justify-between items-center p-6 border-t">
-                        <span className="text-sm text-gray-700">Página 1 de 10</span>
-                        <div className="flex space-x-2">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                            disabled={currentPage === 1}
-                        >
-                            Anterior
-                        </Button>
-                        <Button variant="outline" size="sm" onClick={() => setCurrentPage(currentPage + 1)}>
-                            Siguiente
-                        </Button>
+                                    <Plus className="w-4 h-4" />
+                                    <span>Crear mi primer servicio</span>
+                                </Button>
+                            )}
                         </div>
-                    </div>
+                    ) : (
+                        <>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className="w-4"></TableHead>
+                                        <TableHead>Nombre</TableHead>
+                                        <TableHead>Duración</TableHead>
+                                        <TableHead>Precio</TableHead>
+                                        <TableHead>Categoria</TableHead>
+                                        <TableHead>Estado</TableHead>
+                                        <TableHead className="w-4"></TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    { filteredServices.map(( service: any ) => (
+                                        <TableRow
+                                            key={service.id}
+                                            className="cursor-pointer hover:bg-gray-100"
+                                          
+                                        >
+                                            <TableCell>
+                                                <div className="flex items-center gap-2">
+                                                    {service.image && (
+                                                        <Image
+                                                            src={`${process.env.NEXT_PUBLIC_ROUTE_UPLOADS_DEV}${service.image}`}
+                                                            alt={service.name}
+                                                            width={40}
+                                                            height={40}
+                                                            className="rounded object-cover border"
+                                                            style={{ minWidth: 45, minHeight: 45, maxWidth: 45, maxHeight: 45 }}
+                                                        />
+                                                    )}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>{service.name}</TableCell>
+                                            <TableCell>{service.duration} hora(s)</TableCell>
+                                            <TableCell>S/ {service.price}</TableCell>
+                                            <TableCell>
+                                                <Badge className={getBadgeColor(service.category.name)}>
+                                                    {service.category.name}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell>
+                                                {service.status === 1 ? (
+                                                    <Badge className="bg-green-100 text-green-500 border-green-200">Activo</Badge>
+                                                    ) : (
+                                                    <Badge className="bg-red-100 text-red-500 border-red-200">Inactivo</Badge>
+                                                )}
+                                            </TableCell>
+                                            <TableCell>
+                                                <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" size="sm">
+                                                    <MoreHorizontal className="w-4 h-4" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    <DropdownMenuItem
+                                                        onClick={() => {
+                                                            setSelectedService(service);
+                                                            setIsSheetOpen(true);
+                                                        }}
+                                                    >
+                                                        Ver
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => {
+                                                        setSelectedService(service);
+                                                        setIsEditModalOpen(true);
+                                                    }}>Editar</DropdownMenuItem>
+                                                    <DropdownMenuItem className="text-red-600" onClick={() => { setSelectedService(service); setIsDeleteModalOpen(true); }}>Eliminar</DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+
+                            <div className="flex justify-between items-center p-6 border-t">
+                                <span className="text-sm text-gray-700">Página 1 de 10</span>
+                                <div className="flex space-x-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                                    disabled={currentPage === 1}
+                                >
+                                    Anterior
+                                </Button>
+                                <Button variant="outline" size="sm" onClick={() => setCurrentPage(currentPage + 1)}>
+                                    Siguiente
+                                </Button>
+                                </div>
+                            </div>
+                        </>
+                    )}
                 </CardContent>
             </Card>
 

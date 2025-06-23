@@ -337,18 +337,6 @@ export function EditServiceModal({ open, onClose, onEdit, service, companyId, es
                 formDataToSend.append('image', String(form.image));
             }
 
-            console.log('Datos enviados al backend:', {
-                name: form.name,
-                duration: String(Number(form.duration)),
-                price: String(Number(form.price)),
-                category_id: form.category_id,
-                status: String(Number(form.status)),
-                establishment_id: establishmentId || "",
-                image: selectedFile ? 'Archivo seleccionado' : String(form.image),
-                hasFile: !!selectedFile,
-                willSendAs: selectedFile ? 'FormData' : 'JSON'
-            });
-
             await onEdit(formDataToSend);
             onClose();
         } catch ( error ){

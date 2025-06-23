@@ -4,6 +4,7 @@ import UserConfigComponent from "./_components/UserConfig";
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import cookies from "js-cookie";
+import { useBranchStore } from "@/store/branchStore";
 
 export default function UserPage() {
     const params = useParams();
@@ -11,12 +12,14 @@ export default function UserPage() {
     const searchParams = useSearchParams();
     const branchIdFromUrl = searchParams?.get('branch');
     const [establishmentId, setEstablishmentId] = useState<string | undefined>(undefined);
+    const { selectedBranch } = useBranchStore();
 
     useEffect(() => {
         const user = cookies.get('user');
         if (user) {
-            const data = JSON.parse(user);
-            setEstablishmentId(branchIdFromUrl || data.company.firstEstablishment?.id);
+            if ( selectedBranch ) {
+                setEstablishmentId(selectedBranch)
+            }
         }
     }, [branchIdFromUrl]);
 

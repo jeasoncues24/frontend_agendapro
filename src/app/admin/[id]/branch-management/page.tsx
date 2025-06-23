@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import BranchSelector from "./_components/branch-selector"
 import { useBranches } from "@/hooks/useBranchCompany";
 import { LoaderCircle } from "lucide-react";
+import { useBranchStore } from "@/store/branchStore";
 
 const mockUserData = {
   role: 2,
@@ -35,7 +36,9 @@ export default function BranchesPage({ params }: Props) {
   }
 
   const handleSelectBranch = (branch: { value: string }) => {
-    router.push(`/admin/${id}/quotes?branch=${branch.value}`)
+    const { setBranch } = useBranchStore.getState();
+    setBranch(branch.value);
+    router.push(`/admin/${id}/quotes`)
   }
 
   if (userRole === 0) {

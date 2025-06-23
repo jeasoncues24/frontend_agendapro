@@ -19,6 +19,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "
 import { CreateUserModal, EditUserModal, DeleteUserModal } from "./UserModals"
 import { createUser, updateUser, deleteUser } from "@/services/user.service"
 import { customToast } from "@/components/ui/custom-toast"
+import Image from "next/image"
 
 const ROLES: Record<number, string> = {
   1: "Super Admin",
@@ -100,7 +101,7 @@ export default function UserConfigComponent({ companyId, establishmentId }: { co
             className="pl-10"
           />
         </div>
-        
+
       </div>
 
       {/* Data Table */}
@@ -112,78 +113,111 @@ export default function UserConfigComponent({ companyId, establishmentId }: { co
             </h3>
           </div>
 
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-4"></TableHead>
-                <TableHead>Nombres</TableHead>
-                <TableHead>Rol</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Estado</TableHead>
-                <TableHead className="w-4"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {users.map((user: any) => (
-                <TableRow key={user.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <span className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-blue-400 text-white font-bold">
-                        {(user.name && user.name.length > 0) ? user.name.charAt(0).toUpperCase() : "U"}
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-gray-600">{user.name}</TableCell>
-                  <TableCell className="text-gray-600">{ROLES[user.role_id] || "Desconocido"}</TableCell>
-                  <TableCell className="text-gray-600">{user.email}</TableCell>
-                  <TableCell>
-                    {user.status === 1 ? (
-                      <Badge className="bg-green-100 text-green-500 border-green-200">Activo</Badge>
-                    ) : (
-                      <Badge className="bg-red-100 text-red-500 border-red-200">Inactivo</Badge>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">
-                          <MoreHorizontal className="w-4 h-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => { setSelectedUser(user); setIsSheetOpen(true); }}>Ver</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => { setSelectedUser(user); setIsEditModalOpen(true); }}>Editar</DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-600" onClick={() => { setSelectedUser(user); setIsDeleteModalOpen(true); }}>Eliminar</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-
-          {/* Pagination */}
-          <div className="flex justify-between items-center p-6 border-t">
-            <span className="text-sm text-gray-700">Página 1 de 10</span>
-            <div className="flex space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                disabled={currentPage === 1}
-              >
-                Anterior
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => setCurrentPage(currentPage + 1)}>
-                Siguiente
-              </Button>
+          {users.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 px-6">
+              <div className="flex items-center justify-center mb-6">
+                <Image
+                  src="/images/empty.png"
+                  alt="empty"
+                  height={200}
+                  width={200}
+                />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                {searchTerm ? "No se encontraron usuarios" : "No tienes usuarios aún"}
+              </h3>
+              <p className="text-gray-600 text-center mb-8 max-w-md">
+                {searchTerm
+                  ? "No se encontraron usuarios que coincidan con tu búsqueda. Intenta con otros términos."
+                  : "Comienza creando tu primer usuarios. Es fácil y rápido."
+                }
+              </p>
+              {!searchTerm && (
+                <Button
+                  className="flex items-center space-x-2"
+                  onClick={() => setIsCreateModalOpen(true)}
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Crear mi primer usuario</span>
+                </Button>
+              )}
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          ) : (
+            <>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-4"></TableHead>
+                    <TableHead>Nombres</TableHead>
+                    <TableHead>Rol</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Estado</TableHead>
+                    <TableHead className="w-4"></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {users.map((user: any) => (
+                    <TableRow key={user.id}>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <span className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-blue-400 text-white font-bold">
+                            {(user.name && user.name.length > 0) ? user.name.charAt(0).toUpperCase() : "U"}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-gray-600">{user.name}</TableCell>
+                      <TableCell className="text-gray-600">{ROLES[user.role_id] || "Desconocido"}</TableCell>
+                      <TableCell className="text-gray-600">{user.email}</TableCell>
+                      <TableCell>
+                        {user.status === 1 ? (
+                          <Badge className="bg-green-100 text-green-500 border-green-200">Activo</Badge>
+                        ) : (
+                          <Badge className="bg-red-100 text-red-500 border-red-200">Inactivo</Badge>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm">
+                              <MoreHorizontal className="w-4 h-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => { setSelectedUser(user); setIsSheetOpen(true); }}>Ver</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => { setSelectedUser(user); setIsEditModalOpen(true); }}>Editar</DropdownMenuItem>
+                            <DropdownMenuItem className="text-red-600" onClick={() => { setSelectedUser(user); setIsDeleteModalOpen(true); }}>Eliminar</DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+
+              <div className="flex justify-between items-center p-6 border-t">
+                <span className="text-sm text-gray-700">Página 1 de 10</span>
+                <div className="flex space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                    disabled={currentPage === 1}
+                  >
+                    Anterior
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => setCurrentPage(currentPage + 1)}>
+                    Siguiente
+                  </Button>
+                </div>
+              </div >
+            </>
+          )
+          }
+        </CardContent >
+      </Card >
 
       {/* Sheet para ver información del usuario */}
-      <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+      < Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen} >
         <SheetContent>
           <SheetHeader>
             <SheetTitle>Información del usuario</SheetTitle>
@@ -210,12 +244,12 @@ export default function UserConfigComponent({ companyId, establishmentId }: { co
                   <span className="text-xs text-gray-500">Estado</span>
                   {selectedUser.status === 1 ? (
                     <Badge className="bg-green-100 text-green-700 border-green-200 px-3 py-1 rounded-full flex items-center gap-1">
-                      <svg className="w-3 h-3 fill-green-500" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10"/></svg>
+                      <svg className="w-3 h-3 fill-green-500" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10" /></svg>
                       Activo
                     </Badge>
                   ) : (
                     <Badge className="bg-red-100 text-red-700 border-red-200 px-3 py-1 rounded-full flex items-center gap-1">
-                      <svg className="w-3 h-3 fill-red-500" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10"/></svg>
+                      <svg className="w-3 h-3 fill-red-500" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10" /></svg>
                       Inactivo
                     </Badge>
                   )}
@@ -232,7 +266,7 @@ export default function UserConfigComponent({ companyId, establishmentId }: { co
             </div>
           )}
         </SheetContent>
-      </Sheet>
+      </Sheet >
 
       <CreateUserModal
         open={isCreateModalOpen}
@@ -257,7 +291,7 @@ export default function UserConfigComponent({ companyId, establishmentId }: { co
         onDelete={handleDeleteUser}
         user={selectedUser}
       />
-    </div>
+    </div >
   )
 }
 

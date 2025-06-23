@@ -18,49 +18,6 @@ interface PaymentMethod {
 }
 
 export default function CreateUserComponent() {
-    const [qrMethods, setQrMethods] = useState<PaymentMethod[]>([
-        {
-            id: "efectivo",
-            name: "EFECTIVO",
-            icon: "Y",
-            color: "bg-purple-600",
-            configured: false,
-            enabled: false,
-            image: "1732551363967-493808512.png"
-        },
-        {
-            id: "yape",
-            name: "YAPE",
-            icon: "P",
-            color: "bg-blue-500",
-            configured: false,
-            enabled: false,
-            image: "1732552185381-384602505.png"
-        },
-        {
-            id: "plin",
-            name: "PLIN",
-            icon: "T",
-            color: "bg-pink-500",
-            configured: false,
-            enabled: false,
-            image: "1732568695903-373179425.png"
-        },
-    ])
-
-    const toggleMethod = (id: string) => {
-        setQrMethods((methods) =>
-            methods.map((method) => (method.id === id ? { ...method, enabled: !method.enabled } : method)),
-        )
-    }
-
-    const deleteMethod = (id: string) => {
-        setQrMethods((methods) => methods.filter((method) => method.id !== id))
-    }
-
-    const configureMethod = (id: string) => {
-        console.log(`Configurando método: ${id}`)
-    }
 
     return (
         <div className="max-w-6xl mx-auto p-6  min-h-screen">

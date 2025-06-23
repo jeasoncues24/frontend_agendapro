@@ -1,6 +1,6 @@
 'use client';
 
-import { Bell, CircleHelp, LogOut, Search, Settings, Eye } from "lucide-react"
+import { Bell, CircleHelp, LogOut, Search, Settings, Eye, CircleUser } from "lucide-react"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../ui/breadcrumb"
 import { Button } from "../ui/button"
 import { Separator } from "../ui/separator"
@@ -12,13 +12,18 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { Branch } from "@/types/branch";
 import { slugify } from "@/lib/utils";
+import { logout } from "@/actions/auth/logout";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { PiSignOutBold } from "react-icons/pi";
+import { useBranchStore } from "@/store/branchStore";
 
 function HeaderComponent() {
     const [branch, setBranch] = useState<Branch | null>(null);
     const [company, setCompany] = useState<string>("");
     const pathname = usePathname();
     const searchParams = useSearchParams();
-
+    const [dropdownOpen, setDropdownOpen] = useState(false)
+    const [isEmail, setIsEmail] = useState("")
     const [isUser, setIsUser] = useState("");
 
 
@@ -31,11 +36,20 @@ function HeaderComponent() {
           setCompany(companyIdForUser)
           setBranch(userBranch);
           setIsUser(data.name);
+          setIsEmail(data.email)
         }
        
     }, [pathname, searchParams]);
 
  
+    const handleLogout = async () => {
+        const { clearBranch } = useBranchStore.getState();
+        clearBranch();
+
+        await logout()
+        setDropdownOpen(false)
+    }
+    
 
     return (
         <header className="flex h-16 shrink-0 items-center justify-between gap-2 border-b px-4 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
@@ -93,9 +107,35 @@ function HeaderComponent() {
 
                
                 <div className="flex justify-start gap-4 items-center">
-                    <Avatar className="h-10 w-10 cursor-pointer ">
-                      <AvatarFallback className="font-semibold bg-[#DCFCE7] text-green-500 border border-green-300">{isUser?.charAt(0).toUpperCase() || ''}</AvatarFallback>
-                    </Avatar>
+                    <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="p-0" onClick={() => setDropdownOpen(true)}>
+                                <Avatar className="h-10 w-10 cursor-pointer ">
+                                    <AvatarFallback className="font-semibold bg-[#DCFCE7] text-green-500 border border-green-300">{isUser?.charAt(0).toUpperCase() || ''}</AvatarFallback>
+                                </Avatar>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-[280px] mt-2 rounded-md" align="end">
+                            <DropdownMenuLabel>
+                                <div className="flex justify-start gap-4 items-center">
+                                    <Avatar className="h-10 w-10 cursor-pointer ">
+                                    <AvatarFallback className="font-semibold bg-[#DCFCE7] text-green-500 border border-green-300">{isUser?.charAt(0).toUpperCase() || ''}</AvatarFallback>
+                                    </Avatar>
+                                    <div className="flex flex-col space-y-1">
+                                    <p className="text-sm font-medium leading-none">{isUser}</p>
+                                    <p className="text-xs text-gray-500 leading-none ">{isEmail}</p>
+                                    </div>
+                                </div>
+                            </DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem className="cursor-pointer text-gray-500 font-semibold" >
+                            <CircleUser size={20} className="text-gray-500 mr-2" /> Cuenta
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="cursor-pointer text-gray-500 font-semibold" onClick={handleLogout}>
+                            <PiSignOutBold size={20} className="text-gray-500 mr-2" /> Salir
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                     
                 </div>
 

@@ -20,6 +20,8 @@ import { updateBranch, getBranchDetails, deleteBranch } from "@/services/branche
 import { customToast } from "@/components/ui/custom-toast"
 import { useRouter } from "next/navigation"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { addBranch } from "@/services/branch.service"
 
 interface Inquiry {
   id: string
@@ -46,6 +48,15 @@ export default function ListEstablishment({ id }: Props) {
   const [selectedBranch, setSelectedBranch] = useState<any>(null)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [branchToDelete, setBranchToDelete] = useState<any>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [createForm, setCreateForm] = useState({
+    name: "",
+    ubication: "",
+    companyId: "",
+    status: 1
+  });
+  const [createErrors, setCreateErrors] = useState<{ [key: string]: string }>({});
+  const [isCreating, setIsCreating] = useState(false);
   const router = useRouter()
 
   const openEditModal = async (branch: any) => {
@@ -99,6 +110,103 @@ export default function ListEstablishment({ id }: Props) {
   const closeEditModal = () => {
     setSelectedBranch(null)
     setIsEditModalOpen(false)
+  }
+
+  const handleCreateEstablishment = async (data: any) => {
+    setIsCreating(true);
+    try {
+
+      console.log(id)
+      console.log(data)
+
+      await addBranch(data);
+      
+      customToast.success({
+        title: "Sucursal creada",
+        description: "La sucursal fue creada correctamente."
+      });
+      setRefreshKey((k) => k + 1);
+      setIsCreateModalOpen(false);
+      setCreateForm({
+        name: "",
+        ubication: "",
+        companyId: id,
+        status: 1
+      });
+      setCreateErrors({});
+    } catch (error: any) {
+      setIsCreateModalOpen(false);
+      setCreateForm({
+        name: "",
+        ubication: "",
+        companyId: id,
+        status: 1
+      });
+      customToast.error({
+        title: "Error",
+        description: `${error?.message}`
+      });
+    } finally {
+      setIsCreating(false);
+    }
+  }
+
+  const handleFormChange = (field: string, value: string) => {
+    setCreateForm(prev => ({
+      ...prev,
+      [field]: value
+    }));
+    if (createErrors[field]) {
+      setCreateErrors(prev => ({
+        ...prev,
+        [field]: ""
+      }));
+    }
+  }
+
+  const validateForm = () => {
+    const errors: { [key: string]: string } = {};
+    
+    if (!createForm.name.trim()) {
+      errors.name = "El nombre es obligatorio";
+    } else if (createForm.name.trim().length < 3) {
+      errors.name = "El nombre debe tener al menos 3 caracteres";
+    }
+    
+    if (!createForm.ubication.trim()) {
+      errors.ubication = "La ubicación es obligatoria";
+    } else if (createForm.ubication.trim().length < 5) {
+      errors.ubication = "La ubicación debe tener al menos 5 caracteres";
+    }
+    
+    setCreateErrors(errors);
+    return Object.keys(errors).length === 0;
+  }
+
+  const handleCreateSubmit = () => {
+    if (!validateForm()) {
+      customToast.error({
+        title: "Campos inválidos",
+        description: "Por favor, corrige los errores en el formulario."
+      });
+      return;
+    }
+    handleCreateEstablishment({
+      ...createForm,
+      companyId: id
+    });
+  }
+
+  const handleCloseCreateModal = () => {
+    setIsCreateModalOpen(false);
+    setCreateForm({
+      name: "",
+      ubication: "",
+      companyId: id,
+      status: 1
+    });
+    setCreateErrors({});
+    setIsCreating(false);
   }
 
   const handleDeleteBranch = async () => {
@@ -162,7 +270,7 @@ export default function ListEstablishment({ id }: Props) {
             <Download className="w-4 h-4" />
             <span>Exportar</span>
           </Button>
-          <Button className="flex items-center space-x-2">
+          <Button className="flex items-center space-x-2" onClick={() => setIsCreateModalOpen(true)}>
             <Plus className="w-4 h-4" />
             <span>Crear sucursal</span>
           </Button>
@@ -283,6 +391,65 @@ export default function ListEstablishment({ id }: Props) {
             </Button>
             <Button variant="destructive" onClick={handleDeleteBranch}>
               Eliminar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Crear nueva sucursal</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="nombre" className="text-sm font-medium">
+                Nombre de la sucursal *
+              </Label>
+              <Input
+                id="nombre"
+                className={`w-full ${createErrors.name ? 'border-red-500' : ''}`}
+                value={createForm.name}
+                onChange={(e) => handleFormChange('name', e.target.value)}
+                disabled={isCreating}
+              />
+              {createErrors.name && (
+                <p className="text-red-500 text-xs">{createErrors.name}</p>
+              )}
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="ubicacion" className="text-sm font-medium">
+                Ubicación *
+              </Label>
+              <Input
+                id="ubicacion"
+                className={`w-full ${createErrors.ubication ? 'border-red-500' : ''}`}
+                value={createForm.ubication}
+                onChange={(e) => handleFormChange('ubication', e.target.value)}
+                disabled={isCreating}
+              />
+              {createErrors.ubication && (
+                <p className="text-red-500 text-xs">{createErrors.ubication}</p>
+              )}
+            </div>
+          
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={handleCloseCreateModal} disabled={isCreating}>
+              Cancelar
+            </Button>
+            <Button onClick={handleCreateSubmit} disabled={isCreating}>
+              {isCreating ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Guardando...
+                </>
+              ) : (
+                "Guardar"
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>

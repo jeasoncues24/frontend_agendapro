@@ -25,6 +25,7 @@ import {
 } from "../ui/dropdown-menu"
 import { Avatar, AvatarFallback } from "../ui/avatar"
 import { logout } from "@/actions/auth/logout"
+import { useBranchStore } from "@/store/branchStore"
 
 interface Props {
   id: string
@@ -102,6 +103,9 @@ export const HeaderAdmin = () => {
   }
 
   const handleLogout = async () => {
+    const { clearBranch } = useBranchStore.getState();
+    clearBranch();
+
     await logout()
     setDropdownOpen(false)
   }

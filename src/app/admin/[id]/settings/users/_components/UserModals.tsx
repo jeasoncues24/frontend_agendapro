@@ -85,12 +85,12 @@ export function CreateUserModal({ open, onClose, onCreate, companyId, establishm
             <Input name="password" placeholder="Password" value={form.password} onChange={handleChange} type="password" />
             {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
           </div>
-          <select name="role" value={form.role} onChange={handleChange} className="w-full border rounded p-2">
+          <select name="role" value={form.role} onChange={handleChange} className="w-full border rounded-lg p-2">
             {Object.entries(ROLES).map(([id, label]) => (
               <option key={id} value={id}>{label}</option>
             ))}
           </select>
-          <select name="status" value={form.status} onChange={handleChange} className="w-full border rounded p-2">
+          <select name="status" value={form.status} onChange={handleChange} className="w-full border rounded-lg p-2">
             <option value={1}>Activo</option>
             <option value={2}>Inactivo</option>
           </select>

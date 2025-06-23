@@ -3,6 +3,7 @@ import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import cookies from "js-cookie";
 import CategoryServicesList from "./_components/CategoryServicesList";
+import { useBranchStore } from "@/store/branchStore";
 
 export default function CategoryServicesPage() {
     const params = useParams();
@@ -10,16 +11,19 @@ export default function CategoryServicesPage() {
     const searchParams = useSearchParams();
     const branchIdFormUrl = searchParams?.get('branch');
     const [establishmentId, setEstablishmentId] = useState<string | undefined>(undefined);
+    const { selectedBranch } = useBranchStore();
 
     useEffect(() => {
 
         const user = cookies.get('user');
         if ( user ) {
-            const data = JSON.parse(user);
-            setEstablishmentId(branchIdFormUrl || data.company.firstEstablishment?.id);
+            if ( selectedBranch ) {
+                setEstablishmentId(selectedBranch)
+            }
+            // setEstablishmentId(branchIdFormUrl || data.company.firstEstablishment?.id);
         }
 
-    }, [branchIdFormUrl]);
+    }, [selectedBranch]);
 
 
     return ( 

@@ -1,5 +1,17 @@
 import { getApiUrl } from "@/lib/utils"
 import { Branch } from "@/types/branch"
+import cookies from "js-cookie"
+
+const getEndpoint = () =>
+    process.env.NODE_ENV === "production"
+      ? process.env.NEXT_PUBLIC_ENDPOINT_API_PROD
+      : process.env.NEXT_PUBLIC_ENDPOINT_API_DEV;
+
+const getToken = () => {
+    const token = cookies.get("authtoken");
+    if (!token) throw new Error("Token de autenticación no disponible.");
+    return token;
+};
 
 export const getBranch = async (id: string): Promise<Branch> => {
     const apiUrl = getApiUrl()
@@ -16,3 +28,23 @@ export const getBranch = async (id: string): Promise<Branch> => {
 
     return response.json()
 } 
+
+export const addBranch = async(data: any) => {
+    const endpoint = getEndpoint();
+    const token = getToken();
+
+    const response = await fetch(`${endpoint}/branches`, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    });
+    if ( !response.ok ) throw new Error(await response.text());
+    return await response.json();
+} 
+
+
+
+
