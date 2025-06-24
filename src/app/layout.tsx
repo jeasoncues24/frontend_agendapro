@@ -9,7 +9,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: "AgendaPro",
+  title: "AgendaYa",
   description: "Sistema para citas en SPA, barberias, etc.",
 };
 

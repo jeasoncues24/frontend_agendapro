@@ -116,7 +116,7 @@ export default function ConfirmationPage({ bookingData, onBookAnother }: Confirm
 
         <div className="text-xs text-gray-500 text-center leading-relaxed">
           Recuerda que tu compra solo es válida para los servicios y horarios, para los cuales realizaste la reserva.
-          Cualquier cambio o cancelación es exclusiva responsabilidad de Peluquería de Jeason Arturo. AgendaPro, actúa
+          Cualquier cambio o cancelación es exclusiva responsabilidad de Peluquería de Jeason Arturo. AgendaYa, actúa
           solamente como intermediario en la gestión y procesamiento del pago de la reserva.
         </div>
 

@@ -198,7 +198,7 @@ export default function LoginForm() {
                 </div>
 
                 <div className="text-xs text-gray-500 leading-relaxed">
-                    Acepto las Condiciones del servicio y reconozco que he revisado la Política de privacidad de AgendaPro.
+                    Acepto las Condiciones del servicio y reconozco que he revisado la Política de privacidad de AgendaYa.
                 </div>
             </div>
         </>

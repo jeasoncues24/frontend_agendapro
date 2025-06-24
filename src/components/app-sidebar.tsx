@@ -5,6 +5,7 @@ import {
   Album,
   Calendar,
   CalendarCheck,
+  CalendarFold,
   ChartNoAxesCombined,
   CircleUserRound,
   Frame,
@@ -96,6 +97,11 @@ const data = {
       title: "Clientes",
       url: "customer",
       icon: CircleUserRound
+    },
+    {
+      title: "Horarios",
+      url: "schedules",
+      icon: CalendarFold
     },
     {
       title: "Reportes",

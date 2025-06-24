@@ -2,7 +2,7 @@ import { Metadata } from "next"
 import { CustomToaster } from "@/components/ui/custom-toast"
 
 export const metadata: Metadata = {
-    title: "AgendaPro",
+    title: "AgendaYa",
     description: "Sistema de citas para barberias, spa, etc."
 }
 

@@ -123,7 +123,7 @@ export const HeaderAdmin = () => {
                         <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center">
                         <div className="w-4 h-4 bg-white rounded-sm"></div>
                         </div>
-                        <span className="text-xl font-semibold text-gray-900">AgendaPro</span>
+                        <span className="text-xl font-semibold text-gray-900">AgendaYa</span>
                         <span className="text-sm text-gray-500 font-medium">cloud</span>
                     </div>
                 </div>
@@ -150,35 +150,43 @@ export const HeaderAdmin = () => {
           {!loaded ? (
             <div className="animate-pulse rounded-full bg-gray-300 p-2 w-10 h-10"></div>
           ) : (
-            <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="p-0" onClick={() => setDropdownOpen(true)}>
-                  <Avatar className="h-10 w-10 cursor-pointer user-avatar">
-                    <AvatarFallback className="font-semibold bg-[#DCFCE7] text-green-500 border border-green-300 ">{isUser?.charAt(0).toUpperCase() || ''}</AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-[280px] mt-2 rounded-md" align="end">
-                <DropdownMenuLabel>
-                  <div className="flex justify-start gap-4 items-center">
-                    <Avatar className="h-10 w-10 cursor-pointer ">
-                      <AvatarFallback className="font-semibold bg-[#DCFCE7] text-green-500 border border-green-300">{isUser?.charAt(0).toUpperCase() || ''}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">{isUser}</p>
-                      <p className="text-xs text-gray-500 leading-none ">{isEmail}</p>
-                    </div>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer text-gray-500 font-semibold" onClick={handleAccount}>
-                  <CircleUser size={20} className="text-gray-500 mr-2" /> Cuenta
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer text-gray-500 font-semibold" onClick={handleLogout}>
-                  <PiSignOutBold size={20} className="text-gray-500 mr-2" /> Salir
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="flex justify-start gap-4 items-center">
+                        <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" className="p-0 rounded-full" onClick={() => setDropdownOpen(true)}>
+                                    <Avatar className="h-10 w-10 cursor-pointer avatar-glow">
+                                        <AvatarFallback className="font-semibold bg-gradient-to-br from-green-100 to-green-200 text-green-600 border-2 border-green-300 shadow-sm">
+                                            {isUser?.charAt(0).toUpperCase() || ''}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-[280px] mt-4 rounded-xl shadow-xl border-gray-200 dropdown-appear" align="end">
+                                <DropdownMenuLabel className="p-4">
+                                    <div className="flex justify-start gap-3 items-center">
+                                        <Avatar className="h-12 w-12">
+                                            <AvatarFallback className="font-semibold bg-gradient-to-br from-green-100 to-green-200 text-green-600 border-2 border-green-300 text-lg">
+                                                {isUser?.charAt(0).toUpperCase() || ''}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                        <div className="flex flex-col space-y-1">
+                                            <p className="text-sm font-semibold leading-none text-gray-900">{isUser}</p>
+                                            <p className="text-xs text-gray-500 leading-none">{isEmail}</p>
+                                        </div>
+                                    </div>
+                                </DropdownMenuLabel>
+                                <DropdownMenuSeparator className="bg-gray-100" />
+                                <DropdownMenuItem className="cursor-pointer text-gray-600 font-medium p-3 dropdown-item rounded-lg mx-1">
+                                    <CircleUser size={18} className="text-gray-500 mr-3" /> 
+                                    Cuenta
+                                </DropdownMenuItem>
+                                <DropdownMenuItem className="cursor-pointer text-gray-600 font-medium p-3 dropdown-item rounded-lg mx-1 mb-1" onClick={handleLogout}>
+                                    <PiSignOutBold size={18} className="text-gray-500 mr-3" /> 
+                                    Salir
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+            </div>
           )}
         </div>
       </nav>

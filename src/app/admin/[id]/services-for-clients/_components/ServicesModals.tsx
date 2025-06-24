@@ -139,33 +139,99 @@ export function CreateServiceModal({ open, onClose, onCreate, companyId, establi
         <Dialog open={open} onOpenChange={onClose}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Crear nuevo servicio</DialogTitle>
+                    <DialogTitle className="text-2xl font-bold">Crear nuevo servicio</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4">
-                    <div>
-                        <Input name="name" placeholder="Nombre" value={form.name} onChange={handleChange} />
+                    <div className="relative">
+                        <input
+                            type="text"
+                            id="nombre"
+                            name="name"
+                            value={form.name}
+                            onChange={handleChange}
+                            className={`block w-full px-4 pt-6 pb-2 text-base text-gray-900 bg-white border rounded-lg appearance-none focus:outline-none focus:ring-2 transition peer ${errors.name ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-200 focus:ring-blue-600 focus:border-blue-600'}`}
+                            placeholder=" "
+                        />
+                        <label
+                            htmlFor="nombre"
+                            className={`absolute left-4 top-1.5 text-gray-400 text-base pointer-events-none transition-all
+                            peer-placeholder-shownpeer-placeholder-shown:text-base
+                            peer-focus:top-1.5 peer-focus:tpeer-focus:text-blue-600
+                            ${form.name ? 'top-1.5 text-sm text-blue-600' : ''}`}
+                        >
+                        Nombre
+                        </label>
                         {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
                     </div>
-                    <div>
-                        <Input name="duration" placeholder="Duración" value={form.duration} onChange={handleChange} />
+                    <div className="relative">
+                        <input
+                            type="number"
+                            id="duration"
+                            name="duration"
+                            value={form.duration}
+                            onChange={handleChange}
+                            className={`block w-full px-4 pt-6 pb-2 text-base text-gray-900 bg-white border rounded-lg appearance-none focus:outline-none focus:ring-2 transition peer ${errors.duration ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-200 focus:ring-blue-600 focus:border-blue-600'}`}
+                            placeholder=" "
+                        />
+                        <label htmlFor="duration"
+                            className={`absolute left-4 top-1.5 text-gray-400 text-base pointer-events-none transition-all
+                            peer-placeholder-shownpeer-placeholder-shown:text-base
+                            peer-focus:top-1.5 peer-focus:tpeer-focus:text-blue-600
+                            ${form.duration ? 'top-1.5 text-sm text-blue-600' : ''}`}
+                        >
+                            Duración
+                        </label>
                         {errors.duration && <p className="text-red-500 text-xs mt-1">{errors.duration}</p>}
                     </div>
-                    <div>
-                        <Input name="price" placeholder="Precio" value={form.price} onChange={handleChange} />
+                    <div className="relative">
+                    <input
+                            type="number"
+                            id="price"
+                            name="price"
+                            value={form.price}
+                            onChange={handleChange}
+                            className={`block w-full px-4 pt-6 pb-2 text-base text-gray-900 bg-white border rounded-lg appearance-none focus:outline-none focus:ring-2 transition peer ${errors.price ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-200 focus:ring-blue-600 focus:border-blue-600'}`}
+                            placeholder=" "
+                        />
+                        <label htmlFor="price"
+                            className={`absolute left-4 top-1.5 text-gray-400 text-base pointer-events-none transition-all
+                            peer-placeholder-shownpeer-placeholder-shown:text-base
+                            peer-focus:top-1.5 peer-focus:tpeer-focus:text-blue-600
+                            ${form.price ? 'top-1.5 text-sm text-blue-600' : ''}`}
+                        >
+                            Precio
+                        </label>
                         {errors.price && <p className="text-red-500 text-xs mt-1">{errors.price}</p>}
                     </div>
-                    <div>
+                    <div className="relative">
                         <select
                             name="category_id"
                             value={form.category_id}
                             onChange={handleChange}
-                            className="w-full border rounded-md p-2 text-sm"
+                            className={`block w-full px-4 pt-6 pb-2 text-base text-gray-900 bg-white border rounded-lg appearance-none focus:outline-none focus:ring-2 transition peer ${errors.category_id ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-200 focus:ring-blue-600 focus:border-blue-600'}`}
                         >
                             <option value="">Selecciona una categoría</option>
                             {categories.map((cat: any) => (
                                 <option key={cat.id} value={cat.id}>{cat.name}</option>
                             ))}
                         </select>
+                        <svg
+                            className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            viewBox="0 0 24 24"
+                        >
+                            <path d="M19 9l-7 7-7-7" />
+                        </svg>
+                        <label
+                            htmlFor="category_id"
+                            className={`absolute left-4 top-1.5 text-gray-400 text-base pointer-events-none transition-all
+                            peer-focus:top-1.5 peer-focus:text-smpeer-focus:text-blue-600
+                            ${form.category_id ? 'top-1.5 text-sm text-blue-600' :'peer-placeholder-shown:top-4 peer-placeholder-shown:text-base'}`}
+                        >
+                            Estado
+                        </label>
                         {errors.category_id && <p className="text-red-500 text-xs mt-1">{errors.category_id}</p>}
                     </div>
                     <div>
@@ -203,8 +269,8 @@ export function CreateServiceModal({ open, onClose, onCreate, companyId, establi
                    
                 </div>
                 <DialogFooter>
-                    <Button variant="outline" onClick={onClose} disabled={loading}>Cancelar</Button>
-                    <Button onClick={handleSubmit} disabled={loading}>{loading ? "Guardando..." : "Guardar"}</Button>
+                    <Button className="h-10 border-blue-600 text-blue-600 font-semibold hover:bg-transparent hover:text-blue-700 cursor-pointer" variant="outline" onClick={onClose} disabled={loading}>Cancelar</Button>
+                    <Button className="bg-blue-600 hover:bg-blue-700 h-10 font-semibold cursor-pointer" onClick={handleSubmit} disabled={loading}>{loading ? "Guardando..." : "Guardar"}</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
@@ -359,33 +425,99 @@ export function EditServiceModal({ open, onClose, onEdit, service, companyId, es
         <Dialog open={open} onOpenChange={onClose}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Editar servicio</DialogTitle>
+                    <DialogTitle className="text-2xl font-bold">Editar servicio</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4">
-                    <div>
-                        <Input name="name" placeholder="Nombre" value={form.name} onChange={handleChange} />
+                <div className="relative">
+                        <input
+                            type="text"
+                            id="nombre"
+                            name="name"
+                            value={form.name}
+                            onChange={handleChange}
+                            className={`block w-full px-4 pt-6 pb-2 text-base text-gray-900 bg-white border rounded-lg appearance-none focus:outline-none focus:ring-2 transition peer ${errors.name ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-200 focus:ring-blue-600 focus:border-blue-600'}`}
+                            placeholder=" "
+                        />
+                        <label
+                            htmlFor="nombre"
+                            className={`absolute left-4 top-1.5 text-gray-400 text-base pointer-events-none transition-all
+                            peer-placeholder-shownpeer-placeholder-shown:text-base
+                            peer-focus:top-1.5 peer-focus:tpeer-focus:text-blue-600
+                            ${form.name ? 'top-1.5 text-sm text-blue-600' : ''}`}
+                        >
+                        Nombre
+                        </label>
                         {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
                     </div>
-                    <div>
-                        <Input name="duration" placeholder="Duración" value={form.duration} onChange={handleChange} />
+                    <div className="relative">
+                        <input
+                            type="number"
+                            id="duration"
+                            name="duration"
+                            value={form.duration}
+                            onChange={handleChange}
+                            className={`block w-full px-4 pt-6 pb-2 text-base text-gray-900 bg-white border rounded-lg appearance-none focus:outline-none focus:ring-2 transition peer ${errors.duration ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-200 focus:ring-blue-600 focus:border-blue-600'}`}
+                            placeholder=" "
+                        />
+                        <label htmlFor="duration"
+                            className={`absolute left-4 top-1.5 text-gray-400 text-base pointer-events-none transition-all
+                            peer-placeholder-shownpeer-placeholder-shown:text-base
+                            peer-focus:top-1.5 peer-focus:tpeer-focus:text-blue-600
+                            ${form.duration ? 'top-1.5 text-sm text-blue-600' : ''}`}
+                        >
+                            Duración
+                        </label>
                         {errors.duration && <p className="text-red-500 text-xs mt-1">{errors.duration}</p>}
                     </div>
-                    <div>
-                        <Input name="price" placeholder="Precio" value={form.price} onChange={handleChange} />
+                    <div className="relative">
+                    <input
+                            type="number"
+                            id="price"
+                            name="price"
+                            value={form.price}
+                            onChange={handleChange}
+                            className={`block w-full px-4 pt-6 pb-2 text-base text-gray-900 bg-white border rounded-lg appearance-none focus:outline-none focus:ring-2 transition peer ${errors.price ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-200 focus:ring-blue-600 focus:border-blue-600'}`}
+                            placeholder=" "
+                        />
+                        <label htmlFor="price"
+                            className={`absolute left-4 top-1.5 text-gray-400 text-base pointer-events-none transition-all
+                            peer-placeholder-shownpeer-placeholder-shown:text-base
+                            peer-focus:top-1.5 peer-focus:tpeer-focus:text-blue-600
+                            ${form.price ? 'top-1.5 text-sm text-blue-600' : ''}`}
+                        >
+                            Precio
+                        </label>
                         {errors.price && <p className="text-red-500 text-xs mt-1">{errors.price}</p>}
                     </div>
-                    <div>
+                    <div className="relative">
                         <select
                             name="category_id"
                             value={form.category_id}
                             onChange={handleChange}
-                            className="w-full border rounded-md p-2 text-sm"
+                            className={`block w-full px-4 pt-6 pb-2 text-base text-gray-900 bg-white border rounded-lg appearance-none focus:outline-none focus:ring-2 transition peer ${errors.category_id ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-200 focus:ring-blue-600 focus:border-blue-600'}`}
                         >
                             <option value="">Selecciona una categoría</option>
                             {categories.map((cat: any) => (
                                 <option key={cat.id} value={cat.id}>{cat.name}</option>
                             ))}
                         </select>
+                        <svg
+                            className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            viewBox="0 0 24 24"
+                        >
+                            <path d="M19 9l-7 7-7-7" />
+                        </svg>
+                        <label
+                            htmlFor="category_id"
+                            className={`absolute left-4 top-1.5 text-gray-400 text-base pointer-events-none transition-all
+                            peer-focus:top-1.5 peer-focus:text-smpeer-focus:text-blue-600
+                            ${form.category_id ? 'top-1.5 text-sm text-blue-600' :'peer-placeholder-shown:top-4 peer-placeholder-shown:text-base'}`}
+                        >
+                            Estado
+                        </label>
                         {errors.category_id && <p className="text-red-500 text-xs mt-1">{errors.category_id}</p>}
                     </div>
                     <div>
@@ -419,12 +551,12 @@ export function EditServiceModal({ open, onClose, onEdit, service, companyId, es
                             </label>
                         )}
                         </div>
-                    </div>
+                    </div> 
                    
                 </div>
                 <DialogFooter>
-                    <Button variant="outline" onClick={onClose} disabled={loading}>Cancelar</Button>
-                    <Button onClick={handleSubmit} disabled={loading}>{loading ? "Actualizando..." : "Actualizar"}</Button>
+                    <Button className="h-10 border-blue-600 text-blue-600 font-semibold hover:bg-transparent hover:text-blue-700 cursor-pointer" variant="outline" onClick={onClose} disabled={loading}>Cancelar</Button>
+                    <Button className="bg-blue-600 hover:bg-blue-700 h-10 font-semibold cursor-pointer" onClick={handleSubmit} disabled={loading}>{loading ? "Actualizando..." : "Actualizar"}</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
@@ -457,14 +589,14 @@ export function DeleteServiceModal({ open, onClose, onDelete, service }: DeleteS
         <Dialog open={open} onOpenChange={onClose}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>¿Eliminar servicio?</DialogTitle>
+              <DialogTitle className="text-2xl font-bold">¿Eliminar servicio?</DialogTitle>
             </DialogHeader>
             <div className="my-4">
               <p className="text-gray-500">¿Estás seguro de que deseas eliminar el servicio <b>{service?.name}</b>?</p>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={onClose} disabled={loading}>Cancelar</Button>
-              <Button variant="destructive" onClick={handleDelete} disabled={loading}>{loading ? "Eliminando..." : "Eliminar"}</Button>
+              <Button  className="h-10 border-red-500 text-red-500 hover:text-red-500  cursor-pointer" variant="outline" onClick={onClose} disabled={loading}>Cancelar</Button>
+              <Button className="h-10 cursor-pointer" variant="destructive" onClick={handleDelete} disabled={loading}>{loading ? "Eliminando..." : "Eliminar"}</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

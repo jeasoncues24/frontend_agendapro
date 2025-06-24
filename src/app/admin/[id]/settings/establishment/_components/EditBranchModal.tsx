@@ -169,7 +169,6 @@ export default function EditBranchModal({ isOpen, onClose, onSave, branch }: Edi
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Banner Preview */}
           <div className="space-y-2">
-            <Label>Banner</Label>
             <div className="relative aspect-video w-full overflow-hidden rounded-lg border-2 border-dashed border-gray-300 hover:border-gray-400 transition-colors">
               {previewImage ? (
                 <div className="relative w-full h-full">
@@ -210,35 +209,48 @@ export default function EditBranchModal({ isOpen, onClose, onSave, branch }: Edi
           </div>
 
           {/* Name Input */}
-          <div className="space-y-2">
-            <Label htmlFor="name">Nombre</Label>
-            <Input
+          <div className="space-y-2 relative">
+            <input
+              type="text"
               id="name"
               name="name"
               value={formData.name}
               onChange={handleInputChange}
-              placeholder="Ingresa el nombre de la sucursal"
-              className={errors.name ? "border-red-500" : ""}
+              className={`block w-full px-4 pt-6 pb-2 text-base text-gray-900 bg-white border rounded-lg appearance-none focus:outline-none focus:ring-2 transition peer ${errors.name ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-200 focus:ring-blue-600 focus:border-blue-600'}`}
+              placeholder=" "
             />
-            {errors.name && (
-              <p className="text-sm text-red-500">{errors.name}</p>
-            )}
+            <label
+              htmlFor="name"
+              className={`absolute left-4 top-1.5 text-gray-400 text-base pointer-events-none transition-all
+                peer-placeholder-shown:top-4 peer-placeholder-shown:text-base
+                peer-focus:top-1.5 peer-focus:text-sm peer-focus:text-blue-600
+                ${formData.name ? 'top-1.5 text-sm text-blue-600' : ''}`}
+            >
+              Nombre
+            </label>
           </div>
 
           {/* Location Input */}
-          <div className="space-y-2">
-            <Label htmlFor="ubication">Ubicación</Label>
-            <Textarea
+          <div className="space-y-2 relative">
+            <input
+              type="text"
               id="ubication"
               name="ubication"
               value={formData.ubication}
               onChange={handleInputChange}
-              placeholder="Ingresa la ubicación de la sucursal"
-              className={errors.ubication ? "border-red-500" : ""}
+              className={`block w-full px-4 pt-6 pb-2 text-base text-gray-900 bg-white border rounded-lg appearance-none focus:outline-none focus:ring-2 transition peer ${errors.ubication ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-200 focus:ring-blue-600 focus:border-blue-600'}`}
+              placeholder=" "
             />
-            {errors.ubication && (
-              <p className="text-sm text-red-500">{errors.ubication}</p>
-            )}
+            <label
+              htmlFor="ubication"
+              className={`absolute left-4 top-1.5 text-gray-400 text-base pointer-events-none transition-all
+                peer-placeholder-shown:top-4 peer-placeholder-shown:text-base
+                peer-focus:top-1.5 peer-focus:text-sm peer-focus:text-blue-600
+                ${formData.ubication ? 'top-1.5 text-sm text-blue-600' : ''}`}
+            >
+              Ubicación
+            </label>
+            
           </div>
 
           {errors.submit && (
@@ -251,10 +263,11 @@ export default function EditBranchModal({ isOpen, onClose, onSave, branch }: Edi
               variant="outline"
               onClick={onClose}
               disabled={isLoading}
+              className="h-10 border-blue-600 text-blue-600 font-semibold hover:bg-transparent hover:text-blue-700 cursor-pointer"
             >
               Cancelar
             </Button>
-            <Button type="submit" disabled={isLoading}>
+            <Button className="bg-blue-600 hover:bg-blue-700 h-10 font-semibold cursor-pointer" type="submit" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
