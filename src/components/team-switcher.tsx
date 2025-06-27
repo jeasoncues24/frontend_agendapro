@@ -44,16 +44,16 @@ export function TeamSwitcher({
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-green-100 text-green-500">
-                <activeTeam.logo className="size-4" />
+             
+              <div className="text-center mt-2">
+                    <div className="flex items-center justify-center space-x-3 mb-2">
+                        <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center">
+                        <div className="w-4 h-4 bg-white rounded-sm"></div>
+                        </div>
+                        <span className="text-xl font-semibold text-gray-900">AgendaYa</span>
+                        <span className="text-sm text-gray-500 font-medium">cloud</span>
+                    </div>
               </div>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">
-                  AGENDAPRO
-                </span>
-                <span className="truncate text-xs">BETA 0.0.1</span>
-              </div>
-              {/* <ChevronsUpDown className="ml-auto" /> */}
             </SidebarMenuButton>
           </DropdownMenuTrigger>
 

@@ -9,7 +9,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: "AgendaPro",
+  title: "AgendaYa",
   description: "Sistema para citas en SPA, barberias, etc.",
 };
 
@@ -19,7 +19,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="es">
+      <head>
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+      </head>
       <body className={`${inter.variable} antialiased`} suppressHydrationWarning>
         {children}
       </body>

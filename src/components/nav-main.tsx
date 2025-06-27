@@ -50,22 +50,22 @@ export function NavMain({
                   href={item.url}
                   className={
                     item.isActive
-                      ? "w-full bg-green-100 text-green-500"
-                      : "w-full hover:bg-green-100 hover:text-green-500"
+                      ? "w-full bg-gray-100 "
+                      : "w-full hover:bg-gray-100"
                   }
                 >
-                  <SidebarMenuButton tooltip={item.title} isActive={item.isActive} className="w-full hover:bg-green-50">
+                  <SidebarMenuButton tooltip={item.title} isActive={item.isActive} className="w-full hover:bg-gray-200">
                     {item.icon && (
                       <item.icon
-                        className={item.isActive ? "text-green-500 w-5 h-5" : "group-hover/collapsible:text-green-500 w-5 h-5 text-gray-600"}
+                        className={item.isActive ? " w-5 h-5" : "group-hover/collapsible:text-gray-500 w-5 h-5 text-gray-600"}
                       />
                     )}
-                    <span className="hover:text-green-500 text-md text-gray-600 font-medium">{item.title}</span>
+                    <span className="hover:text-gray-500 text-md text-gray-600 font-medium">{item.title}</span>
                     {item.items && (
                       <ChevronRight
                         className={
                           `ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 text-gray-600 ` +
-                          (item.isActive ? "text-green-500" : "group-hover/collapsible:text-green-500")
+                          (item.isActive ? "text-gray-500" : "group-hover/collapsible:text-gray-500")
                         }
                       />
                     )}
@@ -81,13 +81,13 @@ export function NavMain({
                         isActive={subItem.isActive}
                         className={
                           subItem.isActive
-                            ? "bg-green-100 text-green-500"
-                            : "hover:bg-green-100 hover:text-green-500"
+                            ? "bg-gray-200"
+                            : "hover:bg-gray-200"
                         }
                       >
-                        <a href={subItem.url}>
-                          <span>{subItem.title}</span>
-                        </a>
+                        <Link href={subItem.url}>
+                          <span className="text-gray-700">{subItem.title}</span>
+                        </Link>
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
                   ))}

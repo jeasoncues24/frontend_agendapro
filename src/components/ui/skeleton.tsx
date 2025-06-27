@@ -1,13 +1,10 @@
+import React from "react";
 import { cn } from "@/lib/utils"
 
-function Skeleton({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="skeleton"
-      className={cn("bg-accent animate-pulse rounded-md", className)}
-      {...props}
-    />
-  )
+interface SkeletonProps {
+  className?: string;
 }
 
-export { Skeleton }
+export const Skeleton: React.FC<SkeletonProps> = ({ className = "" }) => (
+  <div className={`bg-gray-200 rounded animate-pulse ${className}`} />
+);

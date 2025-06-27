@@ -1,29 +1,19 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import Link from "next/link"
 import {
   Calendar,
   TrendingUp,
   Users,
   CreditCard,
   Star,
-  Eye,
-  EyeOff,
   Sparkles,
-  CheckCircle,
-  ArrowRight,
   Smartphone,
-  Globe,
-  Check,
   CircleCheck,
 } from "lucide-react"
 
@@ -41,18 +31,7 @@ const testimonials = [
 ]
 
 export default function AgendaProLanding() {
-  const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
-  const [formData, setFormData] = useState({
-    businessType: "",
-    employees: "",
-    name: "",
-    email: "",
-    country: "Perú",
-    phone: "",
-    password: "",
-  })
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -61,36 +40,49 @@ export default function AgendaProLanding() {
     return () => clearInterval(interval)
   }, [])
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    setIsLoading(false)
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-green-50">
+      {/* Header */}
+      <header className="bg-white shadow-sm">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.6 }}
+                className="flex items-center space-x-3"
+              >
+                <span className="text-2xl font-bold text-[#25B361]">AgendaPro</span>
+              </motion.div>
+            </div>
+            <div className="flex items-center space-x-4">
+              <Link 
+                href="/login" 
+                className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
+              >
+                Iniciar Sesión
+              </Link>
+              <Link 
+                href="/auth/register" 
+                className="px-4 py-2 text-sm font-medium text-white bg-[#00AF7A] rounded-md hover:bg-[#25B361] transition-colors"
+              >
+                Crear Cuenta
+              </Link>
+            </div>
+          </div>
+        </div>
+      </header>
 
       <div className="container mx-auto px-4 py-8 lg:py-12">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
-          {/* Left Column - Content */}
+        <div className="max-w-4xl mx-auto">
+          {/* Main Content */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="space-y-8"
           >
-            {/* Logo */}
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.6 }}
-              className="flex items-center space-x-3"
-            >
-              <span className="text-2xl font-bold text-gray-900">AgendaPro</span>
-            </motion.div>
-
             {/* Main */}
             <div className="space-y-4">
               <motion.h1
@@ -101,14 +93,14 @@ export default function AgendaProLanding() {
               >
                 Empieza a{" "}
                 <span className="relative">
-                  <span className="text-[#00AF7A]">
+                  <span className="text-[#25B361]">
                     simplificar
                   </span>
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: "100%" }}
                     transition={{ delay: 1.2, duration: 0.8 }}
-                    className="absolute bottom-0 left-0 h-1 bg-[#00AF7A] rounded-full"
+                    className="absolute bottom-0 left-0 h-1 bg-[#25B361] rounded-full"
                   />
                 </span>{" "}
                 tu día a día y haz crecer tu negocio
@@ -220,7 +212,7 @@ export default function AgendaProLanding() {
 
                     <div className="flex-1 space-y-3">
                       <div className="bg-green-50 rounded-lg p-3 text-center">
-                        <div className="w-12 h-12 bg-[#00AF7A] rounded-full flex items-center justify-center mx-auto mb-2">
+                        <div className="w-12 h-12 bg-[#25B361] rounded-full flex items-center justify-center mx-auto mb-2">
                           <Sparkles className="w-6 h-6 text-white" />
                         </div>
                         <p className="text-xs font-medium">AgendaPro</p>
@@ -237,167 +229,10 @@ export default function AgendaProLanding() {
                         </div>
                       </div>
                     </div>
-
-                    <Button size="sm" className="w-full bg-[#00AF7A] hover:bg-[#009966]">
-                      Continuar
-                    </Button>
                   </div>
                 </motion.div>
               </div>
             </motion.div>
-
-           
-          </motion.div>
-
-          {/* Right Column - Registration Form */}
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut", delay: 0.3 }}
-            className="lg:sticky lg:top-8"
-          >
-            <Card className="p-8 shadow-2xl border-0 bg-white/90 backdrop-blur-sm">
-              <CardContent className="p-0 space-y-6">
-                {/* Header */}
-                <div className="text-center space-y-2">
-                  <span className="text-black font-bold text-2xl">¡CREA TU CUENTA GRATIS!</span>
-                  <p className="text-black font-medium">PRUEBA GRATIS POR 7 DÍAS</p>
-                </div>
-
-                {/* Form */}
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="grid grid-cols-1 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="businessType">Tipo de negocio</Label>
-                      <Select
-                        value={formData.businessType}
-                        onValueChange={(value: any) => setFormData({ ...formData, businessType: value })}
-                      >
-                        <SelectTrigger className="h-12 w-full">
-                          <SelectValue placeholder="Peluquería" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="peluqueria">Peluquería</SelectItem>
-                          <SelectItem value="spa">Spa</SelectItem>
-                          <SelectItem value="clinica">Clínica</SelectItem>
-                          <SelectItem value="consultorio">Consultorio</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="name">RUC</Label>
-                      <Input
-                        id="name"
-                        value={formData.name}
-                        onChange={(e: any) => setFormData({ ...formData, name: e.target.value })}
-                        className="h-10"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Razón Social</Label>
-                      <Input
-                        id="name"
-                        value={formData.name}
-                        onChange={(e: any) => setFormData({ ...formData, name: e.target.value })}
-                        className="h-10"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Nombre completo</Label>
-                      <Input
-                        id="name"
-                        value={formData.name}
-                        onChange={(e: any) => setFormData({ ...formData, name: e.target.value })}
-                        className="h-10"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={(e: any) => setFormData({ ...formData, email: e.target.value })}
-                        className="h-10"
-                      />
-                    </div>
-
-                     
-                    <div className="space-y-2">
-                      <Label htmlFor="phone">Teléfono</Label>
-                      <Input
-                        id="phone"
-                        value={formData.phone}
-                        onChange={(e: any) => setFormData({ ...formData, phone: e.target.value })}
-                        className="h-10"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="password">Contraseña</Label>
-                      <div className="relative">
-                        <Input
-                          id="password"
-                          type={showPassword ? "text" : "password"}
-                          value={formData.password}
-                          onChange={(e: any) => setFormData({ ...formData, password: e.target.value })}
-                          className="h-10 pr-12"
-                        />
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0"
-                          onClick={() => setShowPassword(!showPassword)}
-                        >
-                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                    <Button
-                      type="submit"
-                      disabled={isLoading}
-                      className="w-full h-14 bg-[#00AF7A] hover:bg-[#009966] text-white font-semibold text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-                    >
-                      {isLoading ? (
-                        <motion.div
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
-                          className="w-6 h-6 border-2 border-white border-t-transparent rounded-full"
-                        />
-                      ) : (
-                        <span className="flex items-center space-x-2">
-                          <span>Crear cuenta</span>
-                        </span>
-                      )}
-                    </Button>
-                  </motion.div>
-
-                  <p className="text-center text-sm text-gray-500">
-                    <a href="#" className="text-black hover:underline">
-                      términos y condiciones
-                    </a>
-                  </p>
-                </form>
-
-                {/* Trust indicators */}
-                <div className="flex items-center justify-center space-x-4 pt-4 border-t border-gray-100">
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
-                    ))}
-                  </div>
-                  <span className="text-sm text-gray-600">Más de 100 negocios confían en nosotros</span>
-                </div>
-              </CardContent>
-            </Card>
           </motion.div>
         </div>
       </div>
