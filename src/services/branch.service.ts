@@ -45,6 +45,23 @@ export const addBranch = async(data: any) => {
     return await response.json();
 } 
 
+export const getInformationBranch = async ( tradename: string, branch: string ) => {
+    const endpoint = getEndpoint();
+
+    const url = new URL(`${endpoint}/branches/information/${tradename}/${branch}`);
+    const response = await fetch(url.toString(), {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Error ${response.status}: ${response.statusText} - ${errorText}`);
+    }
+
+    return await response.json();
+}
 
 
 

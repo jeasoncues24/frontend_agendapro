@@ -144,15 +144,6 @@ export default function ScheduleManager() {
     }))
   }
 
-  const addHolidayTimeSlot = (holidayIndex: number) => {
-    const newSlot: TimeSlot = {
-      id: `holiday-${holidayIndex}-${Date.now()}`,
-      open: "09:00",
-      close: "17:00",
-      isEditing: true,
-    }
-  }
-
   const deleteTimeSlot = (day: string, slotId: string) => {
     setRegularSchedule((prev) => ({
       ...prev,

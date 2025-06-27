@@ -10,8 +10,7 @@ export default function HeaderTradeName() {
                         <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center">
                         <div className="w-4 h-4 bg-white rounded-sm"></div>
                         </div>
-                        <span className="text-xl font-semibold text-gray-900">AgendaPro</span>
-                        <span className="text-sm text-gray-500 font-medium">cloud</span>
+                        <span className="text-xl font-semibold text-gray-900">AgendaYa</span>
                     </div>
                 </div>
             </div>

@@ -107,3 +107,36 @@ export const updateServiceS = async (id: string, formData: FormData) => {
     if (!response.ok) throw new Error(await response.text());
     return await response.json();
 }
+
+
+
+export const getProductsForSale = async (sucursalId: string, categoryId: string) => {
+    try {
+        const endpoint = getEndpoint();
+
+        const params = {
+            "establishment_id": sucursalId,
+            "category_id": categoryId
+        }
+
+        const response = await fetch(`${endpoint}/services/quotes`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(params)
+        })
+
+        if (!response.ok) {
+            throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+
+       return await response.json();
+
+    } catch (err: any) {
+        return {
+            status: false,
+            message: 'No se pudo obtener productos de la sucursal'
+        }
+    }
+}
