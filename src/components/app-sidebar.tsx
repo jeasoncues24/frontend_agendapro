@@ -55,24 +55,14 @@ const data = {
     },
     {
       title: "Agenda",
-      url: "#",
+      url: "quotes",
       icon: Calendar,
-      items: [
-        {
-          title: "Citas",
-          url: "quotes",
-        },
-        {
-          title: "Calendario",
-          url: "#",
-        }
-      ],
     },
-    {
-      title: "Ventas",
-      url: "sale",
-      icon: Store
-    },
+    // {
+    //   title: "Ventas",
+    //   url: "sale",
+    //   icon: Store
+    // },
     {
       title: "Servicios",
       url: "#",
@@ -88,11 +78,11 @@ const data = {
         }
       ]
     },
-    {
-      title: "Productos",
-      url: "products",
-      icon: Album
-    },
+    // {
+    //   title: "Productos",
+    //   url: "products",
+    //   icon: Album
+    // },
     {
       title: "Clientes",
       url: "customer",
@@ -123,6 +113,10 @@ const data = {
           url: "settings/establishment"
         },
         {
+          title: "Especialidades",
+          url: "settings/speciality"
+        },
+        {
           title: "Usuarios",
           url: "settings/users"
         }, 
@@ -146,8 +140,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const navMainItems = data.navMain.map((item) => {
     const fullItemUrl = item.url.startsWith("#") ? item.url : `/admin/${companyId}/${item.url}`
-    const isActive = item.url === pathname
-    const isParentActive = item.items?.some((subItem) => subItem.url === pathname)
+    // const isActive = item.url === pathname
+    // const isParentActive = item.items?.some((subItem) => subItem.url === pathname)
+    const isActive = fullItemUrl === pathname
+    const isParentActive = item.items?.some((subItem) => {
+      const fullSubUrl = subItem.url.startsWith("#") ? subItem.url : `/admin/${companyId}/${subItem.url}`
+      return fullSubUrl === pathname
+    })
 
     return {
       ...item,
@@ -173,7 +172,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={navMainItems} />
       </SidebarContent>
       <SidebarFooter>
-        {state === 'expanded' && (
+        {/* {state === 'expanded' && (
           <Card className="bg-gray-50 shadow-none border-none">
             <CardContent className="p-4 flex flex-col items-center text-center">
               <p className="font-semibold text-sm mb-2">¡Nuevas características disponibles!</p>
@@ -185,7 +184,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               </div>
             </CardContent>
           </Card>
-        )}
+        )} */}
         <NavUser user={data.user} />
       </SidebarFooter>
       <SidebarRail />

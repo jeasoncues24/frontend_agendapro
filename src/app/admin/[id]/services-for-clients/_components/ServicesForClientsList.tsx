@@ -2,9 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useService } from "@/hooks/useService";
 import { CheckCircle, CheckCircle2, Circle, Download, MoreHorizontal, Plus, Search, Package, CirclePlus } from "lucide-react";
@@ -17,6 +15,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Lista de colores de fondo para los badges
 const badgeColors = [
@@ -31,7 +30,6 @@ const badgeColors = [
     "bg-red-100 text-red-700 border-red-200",
 ];
 
-// Función para obtener un color de badge basado en el nombre de la categoría
 function getBadgeColor(name: string) {
     let hash = 0;
     for (let i = 0; i < name.length; i++) {
@@ -41,7 +39,6 @@ function getBadgeColor(name: string) {
     return badgeColors[index];
 }
 
-// Función para formatear la fecha en español
 function formatFecha(fechaStr: string) {
     if (!fechaStr) return "";
     const fecha = new Date(fechaStr);
@@ -102,7 +99,7 @@ export default function ServicesForClientsList({ companyId, establishmentId }: {
         <>
             <div className="flex justify-between items-start mb-6">
                 <div>
-                    <h1 className="text-2xl font-semibold text-gray-900 mb-1">Servicios</h1>
+                    <h1 className="text-4xl font-bold text-gray-900 mb-1">Servicios</h1>
                 </div>
                 <div className="flex space-x-3">
                 <Button variant="outline" className="flex items-center space-x-2 h-12 px-6">
@@ -116,7 +113,6 @@ export default function ServicesForClientsList({ companyId, establishmentId }: {
                 </div>
             </div>
             <div className="max-w-full mx-auto p-6 bg-white min-h-screen">
-                
 
                 <div className="flex justify-end items-center mb-6">
                     <div className="relative w-72">
@@ -146,8 +142,20 @@ export default function ServicesForClientsList({ companyId, establishmentId }: {
 
                 <div>
                     <div className="p-0">
-                       
-                        {filteredServices.length === 0 ? (
+                        {isLoading ? (
+                            <div className="space-y-4">
+                                {[1,2,3].map(i => (
+                                    <div key={i} className="flex items-center gap-4 p-4 bg-white rounded-xl border border-gray-100">
+                                        <Skeleton className="w-12 h-12 rounded" />
+                                        <div className="flex-1 space-y-2">
+                                            <Skeleton className="h-4 w-1/3 rounded" />
+                                            <Skeleton className="h-4 w-1/4 rounded" />
+                                        </div>
+                                        <Skeleton className="h-8 w-20 rounded" />
+                                    </div>
+                                ))}
+                            </div>
+                        ) : filteredServices.length === 0 ? (
                             <div className="flex flex-col items-center justify-center py-16 px-6">
                                 <div className="flex items-center justify-center mb-6">
                                     <Image
@@ -212,17 +220,23 @@ export default function ServicesForClientsList({ companyId, establishmentId }: {
                                                 </TableCell>
                                                 <TableCell>{service.name}</TableCell>
                                                 <TableCell>{service.duration} hora(s)</TableCell>
-                                                <TableCell>S/ {service.price}</TableCell>
+                                                <TableCell>S/ {service.price.toFixed(2)}</TableCell>
                                                 <TableCell>
                                                     <Badge className={getBadgeColor(service.category.name)}>
                                                         {service.category.name}
                                                     </Badge>
                                                 </TableCell>
-                                                <TableCell>
+                                                <TableCell className="px-4 py-4">
                                                     {service.status === 1 ? (
-                                                        <Badge className="bg-green-100 text-green-500 border-green-200">Activo</Badge>
-                                                    ) : (
-                                                        <Badge className="bg-red-100 text-red-500 border-red-200">Inactivo</Badge>
+                                                        <Badge className="bg-green-100 text-green-600 border-green-100 flex items-center gap-1">
+                                                        <span className="w-2 h-2 rounded-full bg-green-600 inline-block"></span>
+                                                        Activo
+                                                        </Badge>
+                                                    )  : (
+                                                        <Badge className="bg-red-200 text-red-600 border-red-200 flex items-center gap-1">
+                                                        <span className="w-2 h-2 rounded-full bg-red-500 inline-block"></span>
+                                                        Inactivo
+                                                        </Badge>
                                                     )}
                                                 </TableCell>
                                                 <TableCell>

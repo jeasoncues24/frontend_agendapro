@@ -22,6 +22,7 @@ import { useRouter } from "next/navigation"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { addBranch } from "@/services/branch.service"
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface Inquiry {
   id: string
@@ -241,14 +242,7 @@ export default function ListEstablishment({ id }: Props) {
   const endIndex = startIndex + itemsPerPage;
   const currentBranches = filteredBranches.slice(startIndex, endIndex);
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-white">
-        <Loader2 className="w-8 h-8 animate-spin text-gray-500" />
-        <p className="ml-2 text-gray-600">Cargando sucursales...</p>
-      </div>
-    );
-  }
+
 
   if (error) {
     return (
@@ -319,7 +313,19 @@ export default function ListEstablishment({ id }: Props) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {currentBranches.length === 0 ? (
+                {isLoading ? (
+                  <>
+                    {[1,2,3].map(i => (
+                      <TableRow key={i} className="bg-white">
+                        <TableCell><Skeleton className="w-5 h-5 rounded" /></TableCell>
+                        <TableCell><Skeleton className="h-4 w-24 rounded" /></TableCell>
+                        <TableCell><Skeleton className="h-4 w-32 rounded" /></TableCell>
+                        <TableCell><Skeleton className="h-4 w-20 rounded" /></TableCell>
+                        <TableCell><Skeleton className="h-8 w-20 rounded" /></TableCell>
+                      </TableRow>
+                    ))}
+                  </>
+                ) : currentBranches.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={5} className="h-24 text-center text-gray-500">
                       No se encontraron sucursales.

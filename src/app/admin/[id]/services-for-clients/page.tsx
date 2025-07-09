@@ -22,7 +22,7 @@ export default function ServicesForClientes() {
             }
         }
 
-    }, [branchIdFormUrl]);
+    }, [selectedBranch]);
 
 
     return ( 

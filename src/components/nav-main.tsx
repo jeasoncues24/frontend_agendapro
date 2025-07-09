@@ -1,15 +1,10 @@
 "use client"
 
 import { ChevronRight, type LucideIcon } from "lucide-react"
-
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible"
+import { useEffect, useState } from "react"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import {
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -34,65 +29,81 @@ export function NavMain({
     }[]
   }[]
 }) {
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  if (!isClient) return null
+
   return (
     <SidebarGroup>
       <SidebarMenu>
         {items.map((item) => (
-          <Collapsible
-            key={item.title}
-            asChild
-            defaultOpen={item.isActive}
-            className="group/collapsible"
-          >
+          <Collapsible key={item.title} asChild defaultOpen={item.isActive} className="group/collapsible">
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
-                <Link
-                  href={item.url}
-                  className={
-                    item.isActive
-                      ? "w-full bg-gray-100 "
-                      : "w-full hover:bg-gray-100"
-                  }
+                <SidebarMenuButton
+                  asChild
+                  tooltip={item.title}
+                  isActive={item.isActive}
+                  className={`
+                    w-full flex items-center gap-3 py-3 px-4 rounded-none transition-all duration-200
+                    border-l-4
+                    ${item.isActive
+                      ? "bg-orange-50 border-orange-500 text-orange-600 font-semibold"
+                      : "border-transparent text-gray-700 font-medium hover:text-orange-600 hover:bg-orange-50 hover:border-orange-500"
+                    }
+                  `}
                 >
-                  <SidebarMenuButton tooltip={item.title} isActive={item.isActive} className="w-full hover:bg-gray-200">
+                  <Link href={item.url} className="w-full flex items-center">
                     {item.icon && (
                       <item.icon
-                        className={item.isActive ? " w-5 h-5" : "group-hover/collapsible:text-gray-500 w-5 h-5 text-gray-600"}
+                        className={`
+                          w-5 h-5 transition-colors duration-200
+                          ${item.isActive ? "text-orange-600" : "text-gray-500 group-hover/collapsible:text-orange-500"}
+                        `}
                       />
                     )}
-                    <span className="hover:text-gray-500 text-md text-gray-600 font-medium">{item.title}</span>
+                    <span className={`flex-1 text-left text-sm ${item.isActive ? "text-orange-600" : "text-gray-700 hover:text-orange-600"}`}>{item.title}</span>
                     {item.items && (
                       <ChevronRight
-                        className={
-                          `ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 text-gray-600 ` +
-                          (item.isActive ? "text-gray-500" : "group-hover/collapsible:text-gray-500")
-                        }
+                        className={`
+                          w-4 h-4 ml-auto transition-all duration-200
+                          group-data-[state=open]/collapsible:rotate-90
+                          ${item.isActive ? "text-orange-600" : "text-gray-400 group-hover/collapsible:text-orange-500"}
+                        `}
                       />
                     )}
-                  </SidebarMenuButton>
-                </Link>
+                  </Link>
+                </SidebarMenuButton>
               </CollapsibleTrigger>
-              <CollapsibleContent>
-                <SidebarMenuSub>
-                  {item.items?.map((subItem) => (
-                    <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton
-                        asChild
-                        isActive={subItem.isActive}
-                        className={
-                          subItem.isActive
-                            ? "bg-gray-200"
-                            : "hover:bg-gray-200"
-                        }
-                      >
-                        <Link href={subItem.url}>
-                          <span className="text-gray-700">{subItem.title}</span>
-                        </Link>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ))}
-                </SidebarMenuSub>
-              </CollapsibleContent>
+              {item.items && (
+                <CollapsibleContent>
+                  <SidebarMenuSub className="ml-0 px-0 pl-0 border-l-0">
+                    {item.items.map((subItem) => (
+                      <SidebarMenuSubItem key={subItem.title}>
+                        <SidebarMenuSubButton
+                          asChild
+                          isActive={subItem.isActive}
+                          className={`
+                          pl-8 py-3 transition-colors duration-200 rounded-none
+                          ${subItem.isActive
+                              ? "bg-orange-50 text-orange-600 font-semibold "
+                              : "text-gray-600 hover:text-orange-500 hover:bg-orange-50 border-l-4 border-transparent hover:border-orange-500 font-medium hover:font-medium"
+                            }
+                        `}
+                        >
+                          <Link href={subItem.url}>
+                            <span>{subItem.title}</span>
+                          </Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    ))}
+                  </SidebarMenuSub>
+                </CollapsibleContent>
+              )}
             </SidebarMenuItem>
           </Collapsible>
         ))}

@@ -2,61 +2,90 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useCategoryService } from "@/hooks/useCategoryService";
-import { CirclePlus, Download, MoreHorizontal, Plus, Search } from "lucide-react";
+import { Download, MoreHorizontal, Plus, Search, CirclePlus } from "lucide-react";
 import { useState } from "react";
-import { CreateCategoryServiceModal, DeleteCategoryModal, EditCategoryModal } from "./CategoryServicesModals";
 import { customToast } from "@/components/ui/custom-toast";
-import { createCategoryService, deleteCategoryService, updateCategoryService } from "@/services/categoryservices.service";
+import { createServiceS, deleteServiceS, updateServiceS } from "@/services/service.service";
 import Image from "next/image";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useSpeciality } from "@/hooks/useSpeciality";
 
-export default function CategoryServicesList({ companyId, establishmentId }: { companyId: string, establishmentId?: string }) {
+// Lista de colores de fondo para los badges
+const badgeColors = [
+    "bg-blue-100 text-blue-700 border-blue-200",
+    "bg-green-100 text-green-700 border-green-200",
+    "bg-yellow-100 text-yellow-700 border-yellow-200",
+    "bg-purple-100 text-purple-700 border-purple-200",
+    "bg-pink-100 text-pink-700 border-pink-200",
+    "bg-indigo-100 text-indigo-700 border-indigo-200",
+    "bg-orange-100 text-orange-700 border-orange-200",
+    "bg-teal-100 text-teal-700 border-teal-200",
+    "bg-red-100 text-red-700 border-red-200",
+];
+
+function getBadgeColor(name: string) {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const index = Math.abs(hash) % badgeColors.length;
+    return badgeColors[index];
+}
+
+function formatFecha(fechaStr: string) {
+    if (!fechaStr) return "";
+    const fecha = new Date(fechaStr);
+    return fecha.toLocaleDateString("es-ES", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric"
+    });
+}
+
+export default function SpecialityList({ companyId, establishmentId }: { companyId: string, establishmentId?: string }) {
+
     const [refreshKey, setRefreshKey] = useState(0);
-    const { categoryServices, isLoading, error } = useCategoryService(companyId, establishmentId, refreshKey);
+    const { speciality, isLoading, error } = useSpeciality(companyId, establishmentId, refreshKey);
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
-    const [selectedCategory, setSelectedCategory] = useState<any>(null);
+    const [selectedSpeciality, setSelectedSpeciality] = useState<any>(null);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
     const [isEditModalOpen, setIsEditModalOpen] = useState(false)
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+    const [isSheetOpen, setIsSheetOpen] = useState(false);
 
-    // Filtrar categorías según el término de búsqueda
-    const filteredCategories = categoryServices.filter((category: any) =>
-        category.name?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredSpeciality = speciality.filter((specia: any) => specia.name?.toLowerCase().includes(searchTerm.toLowerCase()));
 
-    const handleCreateCategory = async (data: any) => {
+    const handleCreateSpeciality = async (data: any) => {
         try {
-            await createCategoryService(data)
-            customToast.success({ title: "Categoria creada", description: "La categoria de servicio fue creada correctamente." })
+
+            await createServiceS(data);
+            customToast.success({ title: "Especialidad creada", description: "La especialidad fue creada correctamente." })
             setRefreshKey(k => k + 1)
         } catch (err: any) {
             customToast.error({ title: "Error", description: err.message })
         }
     }
 
-
-    const handleEditCategory = async (data: any) => {
+    const handleDeleteSpeciality = async (service: any) => {
         try {
-            await updateCategoryService(selectedCategory.id, data)
-            customToast.success({ title: "Categoria actualizada", description: "La categoria fue actualizado correctamente." })
+            await deleteServiceS(service.id)
+            customToast.success({ title: "Especialidad eliminada", description: "La especialidad fue eliminada correctamente." })
             setRefreshKey(k => k + 1)
         } catch (err: any) {
             customToast.error({ title: "Error", description: err.message })
         }
     }
 
-    const handleDeleteCategory = async (category: any) => {
+    const handleEditSpeciality = async (data: any) => {
         try {
-            await deleteCategoryService(category.id)
-            customToast.success({ title: "Categoria eliminada", description: "La categoria fue eliminada correctamente." })
+            await updateServiceS(selectedSpeciality.id, data);
+            customToast.success({ title: "Especializada actualizada", description: "La especialidad fue actualizada correctamente." })
             setRefreshKey(k => k + 1)
         } catch (err: any) {
+            console.log(err)
             customToast.error({ title: "Error", description: err.message })
         }
     }
@@ -65,29 +94,30 @@ export default function CategoryServicesList({ companyId, establishmentId }: { c
         <>
             <div className="flex justify-between items-start mb-6">
                 <div>
-                    <h1 className="text-4xl font-bold text-gray-900 mb-1">Categorias de servicios</h1>
+                    <h1 className="text-4xl font-bold text-gray-900 mb-1">Especialidades</h1>
                 </div>
                 <div className="flex space-x-3">
-                    <Button variant="outline" className="flex items-center space-x-2 h-12 px-6">
-                        <Download className="w-4 h-4" />
+                <Button variant="outline" className="flex items-center space-x-2 h-12 px-6">
+                    <Download className="w-4 h-4" />
                         <span>Exportar</span>
                     </Button>
                     <Button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg h-12 px-6 text-base transition-colors" onClick={() => setIsCreateModalOpen(true)}>
-                        <CirclePlus className="w-16 h-16" />
-                        <span>Crear categoria</span>
+                        <CirclePlus className="w-4 h-4" />
+                        <span>Crear especialidad</span>
                     </Button>
                 </div>
             </div>
             <div className="max-w-full mx-auto p-6 bg-white min-h-screen">
+
                 <div className="flex justify-end items-center mb-6">
                     <div className="relative w-72">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
                         <input
-                        type="text"
-                        placeholder="Buscar categoria"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full h-12 pl-10 pr-10 py-2 rounded-lg bg-gray-100 text-gray-700 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-600 border-0"
+                            type="text"
+                            placeholder="Buscar especialidad"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full h-12 pl-10 pr-10 py-2 rounded-lg bg-gray-100 text-gray-700 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-600 border-0"
                         />
                         {searchTerm && (
                         <button
@@ -120,7 +150,7 @@ export default function CategoryServicesList({ companyId, establishmentId }: { c
                                     </div>
                                 ))}
                             </div>
-                        ) : filteredCategories.length === 0 ? (
+                        ) : filteredSpeciality.length === 0 ? (
                             <div className="flex flex-col items-center justify-center py-16 px-6">
                                 <div className="flex items-center justify-center mb-6">
                                     <Image
@@ -131,12 +161,12 @@ export default function CategoryServicesList({ companyId, establishmentId }: { c
                                     />
                                 </div>
                                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                                    {searchTerm ? "No se encontraron categorias de servicios" : "No tienes categorias de servicios aún"}
+                                    {searchTerm ? "No se encontraron especialidades" : "No tienes especialidades aún"}
                                 </h3>
                                 <p className="text-gray-600 text-center mb-8 max-w-md">
                                     {searchTerm
-                                        ? "No se encontraron categorias de servicios que coincidan con tu búsqueda. Intenta con otros términos."
-                                        : "Comienza creando tu primera categoria de servicio para ofrecer a tus clientes. Es fácil y rápido."
+                                        ? "No se encontraron especialidades que coincidan con tu búsqueda. Intenta con otros términos."
+                                        : "Comienza creando tu primer especialidad para vincular con tus profesionales. Es fácil y rápido."
                                     }
                                 </p>
                                 {!searchTerm && (
@@ -145,7 +175,7 @@ export default function CategoryServicesList({ companyId, establishmentId }: { c
                                         onClick={() => setIsCreateModalOpen(true)}
                                     >
                                         <Plus className="w-4 h-4" />
-                                        <span>Crear mi primer categoria</span>
+                                        <span>Crear mi primer especialidad</span>
                                     </Button>
                                 )}
                             </div>
@@ -162,15 +192,20 @@ export default function CategoryServicesList({ companyId, establishmentId }: { c
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                        {filteredCategories.map((category: any) => (
-                                            <TableRow key={category.id} className="bg-gray-50 rounded-xl shadow-sm my-2 align-middle">
-                                                <TableCell className="px-4 py-4">
-                                                    <input type="checkbox" className="w-5 h-5 rounded border-gray-300" />
+                                        {filteredSpeciality.map((spec: any) => (
+                                            <TableRow
+                                                key={spec.id}
+                                                className="bg-gray-50 rounded-xl shadow-sm my-2 align-middle"
+                                            >
+                                                <TableCell>
+                                                    <div className="flex items-center gap-2">
+                                                       
+                                                    </div>
                                                 </TableCell>
-                                                <TableCell className="px-4 py-4 font-medium text-gray-900">{category.name}</TableCell>
-                                                <TableCell className="font-medium text-gray-900">{category.description}</TableCell>
-                                                <TableCell className="px-4 py-4">
-                                                    {category.status === 1 ? (
+                                                <TableCell>{spec.name}</TableCell>
+                                                <TableCell>{spec.description}</TableCell>
+                                                <TableCell className=" py-4">
+                                                    {spec.status === 1 ? (
                                                         <Badge className="bg-green-100 text-green-600 border-green-100 flex items-center gap-1">
                                                         <span className="w-2 h-2 rounded-full bg-green-600 inline-block"></span>
                                                         Activo
@@ -190,15 +225,18 @@ export default function CategoryServicesList({ companyId, establishmentId }: { c
                                                             </Button>
                                                         </DropdownMenuTrigger>
                                                         <DropdownMenuContent align="end">
-                                                            <DropdownMenuItem onClick={() => { setSelectedCategory(category); setIsEditModalOpen(true); }}>Editar</DropdownMenuItem>
-                                                            <DropdownMenuItem className="text-red-600 hover:text-red-500" onClick={() => { setSelectedCategory(category); setIsDeleteModalOpen(true); }}>Eliminar</DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() => {
+                                                                setSelectedSpeciality(spec);
+                                                                setIsEditModalOpen(true);
+                                                            }}>Editar</DropdownMenuItem>
+                                                            <DropdownMenuItem className="text-red-600" onClick={() => { setSelectedSpeciality(spec); setIsDeleteModalOpen(true); }}>Eliminar</DropdownMenuItem>
                                                         </DropdownMenuContent>
                                                     </DropdownMenu>
                                                 </TableCell>
                                             </TableRow>
                                         ))}
                                     </TableBody>
-                                </Table >
+                                </Table>
 
                                 <div className="flex justify-between items-center p-6">
                                     <span className="text-sm text-gray-700">Página 1 de 10</span>
@@ -222,34 +260,34 @@ export default function CategoryServicesList({ companyId, establishmentId }: { c
                             </>
                         )}
                     </div>
-                </div >
+                </div>
 
-                <CreateCategoryServiceModal
+              
+
+                {/* <CreateServiceModal
                     open={isCreateModalOpen}
                     onClose={() => setIsCreateModalOpen(false)}
-                    onCreate={handleCreateCategory}
+                    onCreate={handleCreateService}
                     companyId={companyId}
                     establishmentId={establishmentId}
                 />
 
-                <EditCategoryModal
-                    open={isEditModalOpen}
-                    onClose={() => setIsEditModalOpen(false)}
-                    onEdit={handleEditCategory}
-                    category={selectedCategory}
-                    companyId={companyId}
-                    establishmentId={establishmentId}
-                />
-
-                <DeleteCategoryModal
+                <DeleteServiceModal
                     open={isDeleteModalOpen}
                     onClose={() => setIsDeleteModalOpen(false)}
-                    onDelete={handleDeleteCategory}
-                    category={selectedCategory}
+                    onDelete={handleDeleteService}
+                    service={selectedService}
                 />
+
+                <EditServiceModal
+                    open={isEditModalOpen}
+                    onClose={() => setIsEditModalOpen(false)}
+                    onEdit={handleEditService}
+                    service={selectedService}
+                    companyId={companyId}
+                    establishmentId={establishmentId}
+                /> */}
             </div>
         </>
     )
 }
-
-export { CreateCategoryServiceModal, EditCategoryModal, DeleteCategoryModal }

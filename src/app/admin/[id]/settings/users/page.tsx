@@ -21,7 +21,7 @@ export default function UserPage() {
                 setEstablishmentId(selectedBranch)
             }
         }
-    }, [branchIdFromUrl]);
+    }, [selectedBranch]);
 
     return (
         <div className="min-h-screen bg-gray-100 text-gray-900 p-8">

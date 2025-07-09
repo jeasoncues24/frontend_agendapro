@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     domains: [
       'antsroute.com',
       'localhost',
-      '192.168.1.54',
+      '192.168.1.57',
     ],
     remotePatterns: [
       {
@@ -15,12 +15,12 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "http",
-        hostname: "192.168.1.54",
+        hostname: "192.168.1.57",
         pathname: "/uploads/**",
       },
       {
         protocol: "http",
-        hostname: "192.168.1.54",
+        hostname: "192.168.1.57",
         port: "5000",
         pathname: "/uploads/**",
       },

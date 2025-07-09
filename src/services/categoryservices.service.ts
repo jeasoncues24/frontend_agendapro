@@ -93,3 +93,20 @@ export const listCategoriesActives = async (establishment_id: string) => {
     if (!response.ok) throw new Error(await response.text());
     return await response.json();
 }
+
+export const getCategoryServicesByCollaborator = async (collaborator_id: string) => {
+    const endpoint = getEndpoint();
+    const token = getToken();
+    const url = new URL(`${endpoint}/category-service/collaborator/list/${collaborator_id}`);
+    const response = await fetch(url.toString(), {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+    });
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Error ${response.status}: ${response.statusText} - ${errorText}`);
+    }
+    return await response.json();
+}

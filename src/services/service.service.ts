@@ -140,3 +140,26 @@ export const getProductsForSale = async (sucursalId: string, categoryId: string)
         }
     }
 }
+
+
+export const getActiveServices = async ( establishment_id?: string ) => {
+    const endpoint = getEndpoint();
+    const token = getToken();
+
+    const url = new URL(`${endpoint}/services/actives/${establishment_id}`);
+
+    const response = await fetch(url.toString(), {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+    });
+
+    
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Error ${response.status}: ${response.statusText} - ${errorText}`);
+    }
+
+    return await response.json();
+}

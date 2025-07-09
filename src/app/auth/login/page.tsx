@@ -7,10 +7,10 @@ export default function AuthPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white relative overflow-hidden">
       {/* Background blur effects - línea horizontal suave */}
-      <div className="absolute top-1/2 left-0 transform -translate-y-1/2 w-full h-96 bg-gradient-to-b from-transparent via-emerald-300/30 to-transparent blur-3xl"></div>
-      <div className="absolute top-1/2 left-0 transform -translate-y-1/2 w-full h-80 bg-gradient-to-b from-transparent via-teal-200/25 to-transparent blur-2xl"></div>
-      <div className="absolute top-1/2 left-0 transform -translate-y-1/2 w-full h-64 bg-gradient-to-b from-transparent via-green-300/20 to-transparent blur-xl"></div>
-      <div className="absolute top-1/2 left-0 transform -translate-y-1/2 w-full h-48 bg-gradient-to-b from-transparent via-emerald-200/35 to-transparent blur-lg"></div>
+      <div className="absolute top-1/2 left-0 transform -translate-y-1/2 w-full h-96 bg-gradient-to-b from-transparent via-blue-300/30 to-transparent blur-3xl"></div>
+      <div className="absolute top-1/2 left-0 transform -translate-y-1/2 w-full h-80 bg-gradient-to-b from-transparent via-blue-200/25 to-transparent blur-2xl"></div>
+      <div className="absolute top-1/2 left-0 transform -translate-y-1/2 w-full h-64 bg-gradient-to-b from-transparent via-blue-300/20 to-transparent blur-xl"></div>
+      <div className="absolute top-1/2 left-0 transform -translate-y-1/2 w-full h-48 bg-gradient-to-b from-transparent via-blue-200/35 to-transparent blur-lg"></div>
 
       {/* Main content */}
       <div className="relative z-10 flex items-center justify-center min-h-screen p-4">

@@ -9,13 +9,14 @@ import { useEffect, useState } from "react"
 import cookies from "js-cookie"
 import { usePathname, useSearchParams } from "next/navigation";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { Avatar, AvatarFallback } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Branch } from "@/types/branch";
 import { slugify } from "@/lib/utils";
 import { logout } from "@/actions/auth/logout";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { PiSignOutBold } from "react-icons/pi";
 import { useBranchStore } from "@/store/branchStore";
+import { Skeleton } from "@/components/ui/skeleton";
 
 function HeaderComponent() {
     const [branch, setBranch] = useState<Branch | null>(null);
@@ -152,22 +153,24 @@ function HeaderComponent() {
                         <BreadcrumbList>
                             <BreadcrumbItem className="hidden md:block">
                                 <BreadcrumbLink href="#" className="breadcrumb-link font-semibold text-black">
-                                    {branch?.name || 'Seleccionar sucursal'}
+                                    {branch?.name ? branch.name : <Skeleton className="h-6 w-32 rounded" />}
                                 </BreadcrumbLink>
                             </BreadcrumbItem>
                             <BreadcrumbSeparator className="hidden md:block separator-fade" />
                             <BreadcrumbItem className="hidden md:block">
                                 <div className="flex items-center gap-2">
-                                    {branch && (
+                                    {branch ? (
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            className="h-10 px-2 view-page-button border-gray-200 text-black font-semibold"
+                                            className="h-8 px-2 view-page-button border-gray-200 text-black font-semibold"
                                             onClick={() => window.open(`/${slugify(company)}/${slugify(branch.name)}`, '_blank')}
                                         >
                                             <Store className="w-4 h-4 mr-1 transition-transform duration-200 group-hover:scale-110 text-gray-500" />
                                             Ver tienda
                                         </Button>
+                                    ) : (
+                                        <Skeleton className="h-8 w-32 rounded" />
                                     )}
                                 </div>
                             </BreadcrumbItem>
@@ -207,18 +210,23 @@ function HeaderComponent() {
                         <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" className="p-0 rounded-full" onClick={() => setDropdownOpen(true)}>
-                                    <Avatar className="h-10 w-10 cursor-pointer avatar-glow">
-                                        <AvatarFallback className="font-semibold bg-gradient-to-br from-green-100 to-green-200 text-green-600 border-2 border-green-300 shadow-sm">
-                                            {isUser?.charAt(0).toUpperCase() || ''}
-                                        </AvatarFallback>
-                                    </Avatar>
+                                    {/* Avatar del usuario */}
+                                    {isUser ? (
+                                        <Avatar className="h-10 w-10 cursor-pointer avatar-glow">
+                                            <AvatarFallback className="font-semibold bg-orange-500 text-white border-2">
+                                                {isUser?.charAt(0).toUpperCase() || ''}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                    ) : (
+                                        <Skeleton className="h-10 w-10 rounded-full" />
+                                    )}
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent className="w-[280px] mt-4 rounded-xl shadow-xl border-gray-200 dropdown-appear" align="end">
                                 <DropdownMenuLabel className="p-4">
                                     <div className="flex justify-start gap-3 items-center">
-                                        <Avatar className="h-12 w-12">
-                                            <AvatarFallback className="font-semibold bg-gradient-to-br from-green-100 to-green-200 text-green-600 border-2 border-green-300 text-lg">
+                                        <Avatar className="h-10 w-10">
+                                            <AvatarFallback className="font-semibold bg-orange-500 text-white text-lg">
                                                 {isUser?.charAt(0).toUpperCase() || ''}
                                             </AvatarFallback>
                                         </Avatar>

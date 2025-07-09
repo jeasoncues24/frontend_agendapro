@@ -6,18 +6,16 @@ const getEndpoint = () => process.env.NODE_ENV === 'production'
 
 const getToken = () => {
     const token = cookies.get('authtoken');
-    if (!token) throw new Error("Token de autenticació no disponible");
+    if (!token) throw new Error("Token de autenticación no disponible.");
     return token;
 };
 
 export const getCustomers = async ( establishment_id?: string ) => {
     const endpoint = getEndpoint();
-    const token = getToken();
 
-    const url = new URL(`${endpoint}/customers/${establishment_id}`);
+    const url = new URL(`${endpoint}/customer/${establishment_id}`);
     const response = await fetch(url.toString(), {
         headers: {
-            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
         }
     });
@@ -29,3 +27,51 @@ export const getCustomers = async ( establishment_id?: string ) => {
 
     return await response.json();
 }
+
+export const createCustomer = async (data: any) => {
+    const endpoint = getEndpoint();
+    const response = await fetch(`${endpoint}/customer`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    });
+    if (!response.ok) throw new Error(await response.text());
+    return await response.json();
+};
+
+export const searchCustomers = async (query: string) => {
+    const endpoint = getEndpoint();
+    const response = await fetch(`${endpoint}/customer/search?q=${encodeURIComponent(query)}`, {
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+    if (!response.ok) throw new Error(await response.text());
+    return await response.json();
+};
+
+export const createCustomerApi = async (data: { name: string; phone: string; email: string; establishment_id: string }) => {
+  const endpoint = getEndpoint();
+  const response = await fetch(`${endpoint}/customer`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error(await response.text());
+  return await response.json();
+};
+
+export const getActiveCustomersApi = async (establishment_id: string) => {
+  const endpoint = getEndpoint();
+  const response = await fetch(`${endpoint}/customer/actives/${establishment_id}`, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  if (!response.ok) throw new Error(await response.text());
+  return await response.json();
+};

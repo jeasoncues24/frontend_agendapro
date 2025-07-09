@@ -1,29 +1,42 @@
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import Image from "next/image";
+import { User } from "lucide-react";
 
-export default function CollaboratorComponent({ professional }: { professional: any[] }) {
-    return (
-        <Card className="border-0 shadow-sm">
-            <CardContent className="p-4">
-                <h3 className="text-sm font-semibold text-gray-900 mb-4">Profesionales</h3>
-                <div className="flex items-center gap-4 overflow-x-auto pb-2">
-                    {professional.map((p: any) => (
-                        <div key={p.id} className="flex-shrink-0 text-center">
-                            <div className="w-10 h-10 rounded-full overflow-hidden mb-2 bg-gray-200 mx-auto">
-                                <div className="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center text-white font-medium">
-                                    {p.initials}
-                                </div>
-                            </div>
-                            <p className="text-xs text-gray-900 font-medium">{p.name}</p>
-                            <p className="text-xs text-gray-600">{p.lastName}</p>
-                        </div>
-                    ))}
-                </div>
-                
-                <div className="flex justify-center gap-1 mt-3">
-                    <div className="w-2 h-2 bg-gray-800 rounded-full"></div>
-                    <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-                </div>
-            </CardContent>
-        </Card>
-    )
+interface Professional {
+  id: string;
+  name: string;
+  lastName?: string;
+  initials: string;
+  photoUrl?: string;
+}
+
+export default function CollaboratorComponent({ professional }: { professional: Professional[] }) {
+  return (
+    <div className="px-5 py-4">
+      <div className="flex items-center gap-2 mb-3">
+        <User className="w-5 h-5 text-gray-500" />
+        <span className="font-bold text-base">Profesionales</span>
+      </div>
+      <div className="flex gap-6 overflow-x-auto pb-2">
+        {professional.map((pro) => (
+          <div key={pro.id} className="flex flex-col items-center min-w-[80px]">
+            {pro.photoUrl ? (
+              <Image
+                src={pro.photoUrl}
+                alt={pro.name}
+                width={56}
+                height={56}
+                className="rounded-full object-cover border-2 border-white shadow"
+              />
+            ) : (
+              <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center text-xl font-bold text-gray-700 shadow border-2 border-white mb-2">
+                {pro.initials}
+              </div>
+            )}
+            <span className="text-xs text-gray-900 text-center font-medium">{pro.name}</span>
+            {pro.lastName && <span className="text-xs text-gray-500 text-center">{pro.lastName}</span>}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }

@@ -155,7 +155,7 @@ export const HeaderAdmin = () => {
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" className="p-0 rounded-full" onClick={() => setDropdownOpen(true)}>
                                     <Avatar className="h-10 w-10 cursor-pointer avatar-glow">
-                                        <AvatarFallback className="font-semibold bg-gradient-to-br from-green-100 to-green-200 text-green-600 border-2 border-green-300 shadow-sm">
+                                        <AvatarFallback className="font-semibold bg-gradient-to-br from-orange-100 to-orange-200 text-orange-600 border-2 border-orange-300 shadow-sm">
                                             {isUser?.charAt(0).toUpperCase() || ''}
                                         </AvatarFallback>
                                     </Avatar>
@@ -165,7 +165,7 @@ export const HeaderAdmin = () => {
                                 <DropdownMenuLabel className="p-4">
                                     <div className="flex justify-start gap-3 items-center">
                                         <Avatar className="h-12 w-12">
-                                            <AvatarFallback className="font-semibold bg-gradient-to-br from-green-100 to-green-200 text-green-600 border-2 border-green-300 text-lg">
+                                            <AvatarFallback className="font-semibold bg-gradient-to-br from-orange-100 to-orange-200 text-orange-600 border-2 border-orange-300 text-lg">
                                                 {isUser?.charAt(0).toUpperCase() || ''}
                                             </AvatarFallback>
                                         </Avatar>
