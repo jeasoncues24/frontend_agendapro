@@ -3,24 +3,26 @@ import { HelpCircle } from "lucide-react"
 
 interface StatsCardsProps {
   stats: {
-    ventaTotal: number
-    comisionEmisor: number
-    comisionCulqi: number
-    igvTotal: number
-    abonoTotal: number
+    ventaTotal: number | string
+    totalReservas: number | string
+    clientesEntrantes: number | string
+    reservasEspera: number | string
+    reservasTerminadas: number | string
   }
 }
 
 export function StatsCards({ stats }: StatsCardsProps) {
-  const formatCurrency = (amount: number) => {
-    const prefix = amount >= 0 ? "S/. " : "-S/. "
-    const value = Math.abs(amount).toFixed(2)
+  const formatCurrency = (amount: number | string) => {
+    const num = typeof amount === 'string' ? parseFloat(amount) : amount;
+    const prefix = num >= 0 ? "S/. " : "-S/. "
+    const value = Math.abs(num).toFixed(2)
     return prefix + value
   }
 
-  const getTextColor = (amount: number) => {
-    if (amount > 0) return "text-green-600"
-    if (amount < 0) return "text-red-600"
+  const getTextColor = (amount: number | string) => {
+    const num = typeof amount === 'string' ? parseFloat(amount) : amount;
+    if (num > 0) return "text-green-600"
+    if (num < 0) return "text-red-600"
     return "text-gray-900"
   }
 
@@ -45,7 +47,7 @@ export function StatsCards({ stats }: StatsCardsProps) {
             <HelpCircle className="w-4 h-4 text-gray-400" />
           </div>
           <div className={`text-xl font-semibold text-green-500`}>
-            15
+            {stats.totalReservas}
           </div>
         </div>
       </div>
@@ -57,7 +59,7 @@ export function StatsCards({ stats }: StatsCardsProps) {
             <HelpCircle className="w-4 h-4 text-gray-400" />
           </div>
           <div className={`text-xl font-semibold text-green-500`}>
-            15
+            {stats.clientesEntrantes}
           </div>
         </div>
       </div>
@@ -68,8 +70,8 @@ export function StatsCards({ stats }: StatsCardsProps) {
             <span className="text-sm text-gray-600">Reservas en espera</span>
             <HelpCircle className="w-4 h-4 text-gray-400" />
           </div>
-          <div className={`text-xl font-semibold ${getTextColor(stats.igvTotal)}`}>
-            5
+          <div className={`text-xl font-semibold text-yellow-600`}>
+            {stats.reservasEspera}
           </div>
         </div>
       </div>
@@ -80,8 +82,8 @@ export function StatsCards({ stats }: StatsCardsProps) {
             <span className="text-sm text-gray-600">Reservas terminadas</span>
             <HelpCircle className="w-4 h-4 text-gray-400" />
           </div>
-          <div className={`text-xl font-semibold ${getTextColor(stats.abonoTotal)}`}>
-            10
+          <div className={`text-xl font-semibold text-blue-600`}>
+            {stats.reservasTerminadas}
           </div>
         </div>
       </div>

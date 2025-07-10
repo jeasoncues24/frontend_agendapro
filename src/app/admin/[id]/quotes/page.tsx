@@ -1,9 +1,10 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { StatsCards } from "./_components/StatsCards"
 import { CalendarHeader } from "./_components/CalendarHeader"
 import { CalendarView } from "./_components/CalendarView"
+import type { Appointment } from "./_components/CalendarView";
 import { CustomNavigation } from "./_components/CustomNavigation"
 import { BookingPage } from "./_components/BookingPage"
 import { useParams, useSearchParams } from "next/navigation"
@@ -19,14 +20,9 @@ import { useShift } from "@/hooks/useShift";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { CheckCircle2, Circle, Sparkles } from "lucide-react";
 import { companyService } from "@/services/company.service";
+import { customToast } from "@/components/ui/custom-toast";
+import { useQuotesStats } from "@/hooks/useQuotesStats";
 
-const statsData = {
-    ventaTotal: 2899.0,
-    comisionEmisor: -44.72,
-    comisionCulqi: -33.46,
-    igvTotal: -6.0,
-    abonoTotal: 2814.82,
-}
 
 export default function QuotesPage() {
     const params = useParams();
@@ -36,7 +32,30 @@ export default function QuotesPage() {
     const [establishmentId, setEstablishmentId] = useState<string | undefined>(undefined);
     const { selectedBranch } = useBranchStore();
 
-    const { quotes, isLoading, error } = useQuotes(establishmentId);
+    const [refreshKey, setRefreshKey] = useState(0);
+    const { quotes, isLoading, error } = useQuotes(establishmentId, refreshKey);
+    const [currentDate, setCurrentDate] = useState(new Date());
+    const { stats, loading: loadingStats, error: errorStats } = useQuotesStats(establishmentId, formatDateToYYYYMMDD(currentDate));
+
+    // Notificación visual cuando llega una nueva reserva
+    const [prevCount, setPrevCount] = useState(0);
+    const firstLoad = useRef(true);
+    useEffect(() => {
+      if (isLoading) return;
+      if (firstLoad.current) {
+        setPrevCount(quotes.length);
+        firstLoad.current = false;
+        return;
+      }
+      if (quotes.length > prevCount) {
+        customToast.success({
+          title: "¡Nueva reserva!",
+          description: "Ha llegado una nueva reserva a tu sucursal.",
+        });
+        setRefreshKey(k => k + 1); // Fuerza la recarga solo cuando llega una nueva reserva
+      }
+      setPrevCount(quotes.length);
+    }, [quotes, isLoading]);
 
     // Onboarding Wizard State
     const { users, isLoading: loadingUsers } = useUsers(companyId, establishmentId);
@@ -88,8 +107,6 @@ export default function QuotesPage() {
         }
     }, [isLoadingOnboarding, users, categories, services, shift, establishmentId, hasLogo, wasDialogOpened]);
 
-    // Progreso y pasos
-    // Simulación de logo: deberías reemplazar esto por el estado real del logo si lo tienes
     useEffect(() => {
         async function fetchLogo() {
             if (companyId) {
@@ -139,11 +156,22 @@ export default function QuotesPage() {
 
     const progress = Math.round((steps.filter(s => s.done).length / steps.length) * 100);
 
-    const [currentDate, setCurrentDate] = useState(new Date(2025, 6, 1))
     const appointments = quotes;
     const [activeView, setActiveView] = useState<"calendario" | "listado">("calendario")
     const [selectedDate, setSelectedDate] = useState<Date | null>(null)
     const [showBooking, setShowBooking] = useState(false)
+    const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
+
+    // useEffect(() => {
+    //   if (selectedAppointment && quotes.length > 0) {
+    //     const updated = quotes.find(q => q.id === selectedAppointment.id);
+    //     if (updated) {
+    //       setSelectedAppointment(updated);
+    //     } else {
+    //       setSelectedAppointment(null); // Si la cita ya no existe, cierra el panel
+    //     }
+    //   }
+    // }, [quotes]);
 
     const handleDayClick = (date: Date) => {
         setSelectedDate(date)
@@ -255,7 +283,9 @@ export default function QuotesPage() {
 
                 {activeView === "calendario" ? (
                     <div className="space-y-6">
-                        {isLoading ? (
+                        {error || errorStats ? (
+                            <div className="text-red-500">Error al cargar datos. {error?.toString() || errorStats?.toString()}</div>
+                        ) : isLoading || loadingStats || !stats ? (
                             <div className="space-y-6">
                                 <div className="grid grid-cols-5">
                                     <Skeleton className="h-24 w-84" />
@@ -268,7 +298,7 @@ export default function QuotesPage() {
                                 <Skeleton className="h-96 w-full" />
                             </div>
                         ) : (
-                            <StatsCards stats={statsData} />
+                            <StatsCards stats={stats} />
                         )}
                         {isLoading ? (
                             <Skeleton className="h-12 w-1/2" />
@@ -278,7 +308,13 @@ export default function QuotesPage() {
                         {isLoading ? (
                             <Skeleton className="h-96 w-full" />
                         ) : (
-                            <CalendarView currentDate={currentDate} appointments={appointments} onDayClick={handleDayClick} />
+                            <CalendarView
+                                currentDate={currentDate}
+                                appointments={appointments}
+                                onDayClick={handleDayClick}
+                                selectedAppointment={selectedAppointment}
+                                setSelectedAppointment={setSelectedAppointment}
+                            />
                         )}
                     </div>
                 ) : (
@@ -289,4 +325,8 @@ export default function QuotesPage() {
             </div>
         </div>
     )
+}
+
+function formatDateToYYYYMMDD(date: Date) {
+  return date.toISOString().split('T')[0];
 }

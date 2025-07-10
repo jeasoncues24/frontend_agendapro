@@ -8,6 +8,7 @@ import {
   CalendarFold,
   ChartNoAxesCombined,
   CircleUserRound,
+  Clock3,
   Frame,
   LayoutDashboard,
   Map,
@@ -98,7 +99,11 @@ const data = {
       url: "reports",
       icon: ChartNoAxesCombined
     },
-    
+    {
+      title: "Estado de tu local",
+      url: "opening-times",
+      icon: Clock3
+    },
     {
       title: "Configuración",
       url: "#",
@@ -125,7 +130,8 @@ const data = {
           url: "settings/payment"
         }
       ]
-    }
+    },
+   
   ],
   
 }

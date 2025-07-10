@@ -1,19 +1,29 @@
 import { useState, useEffect } from "react";
 import { getQuotesByEstablishment, createQuoteApi } from "@/services/quotes.service";
 
-export const useQuotes = (establishmentId?: string, refreshKey?: number) => {
+export const useQuotes = (establishmentId?: string, refreshKey?: number, pollingInterval?: number) => {
     const [quotes, setQuotes] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         if (!establishmentId) return;
-        setIsLoading(true);
-        getQuotesByEstablishment(establishmentId)
-            .then((res) => setQuotes(res.data || res))
-            .catch((err) => setError(err.message || "Error al cargar las citas"))
-            .finally(() => setIsLoading(false));
-    }, [establishmentId, refreshKey]);
+        let interval: NodeJS.Timeout | undefined;
+        const fetchQuotes = () => {
+            setIsLoading(true);
+            getQuotesByEstablishment(establishmentId)
+                .then((res) => setQuotes(res.data || res))
+                .catch((err) => setError(err.message || "Error al cargar las citas"))
+                .finally(() => setIsLoading(false));
+        };
+        fetchQuotes();
+        if (pollingInterval && pollingInterval > 0) {
+            interval = setInterval(fetchQuotes, pollingInterval);
+        }
+        return () => {
+            if (interval) clearInterval(interval);
+        };
+    }, [establishmentId, refreshKey, pollingInterval]);
 
     return { quotes, isLoading, error };
 };

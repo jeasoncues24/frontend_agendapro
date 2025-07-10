@@ -1,13 +1,13 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { CalendarDays, User, Phone, MessageCircle, CreditCard, MoreHorizontal } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Pencil, RefreshCw, Copy, UserX, XCircle } from "lucide-react";
 
-interface Appointment {
+export interface Appointment {
   id: number
   date: string
   type: string
@@ -26,9 +26,11 @@ interface CalendarViewProps {
   currentDate: Date
   appointments: Appointment[]
   onDayClick?: (date: Date) => void
+  selectedAppointment: Appointment | null
+  setSelectedAppointment: (a: Appointment | null) => void
 }
 
-export function CalendarView({ currentDate, appointments, onDayClick }: CalendarViewProps) {
+export function CalendarView({ currentDate, appointments, onDayClick, selectedAppointment, setSelectedAppointment }: CalendarViewProps) {
   const daysOfWeek = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
 
   // Obtener el primer día del mes y cuántos días tiene
@@ -75,17 +77,41 @@ export function CalendarView({ currentDate, appointments, onDayClick }: Calendar
     })
   }
 
-  const getAppointmentForDate = (date: Date) => {
-    const dateString = date.toISOString().split("T")[0]
-    return appointments.find((apt) => apt.date === dateString)
-  }
+  // Cambiar para retornar todas las reservas de un día
+  const getAppointmentsForDate = (date: Date) => {
+    const dateString = date.toISOString().split("T")[0];
+    return appointments.filter((apt) => apt.date === dateString);
+  };
 
   const formatCurrency = (amount: number) => {
     return `S/. ${amount.toFixed(2)}`
   }
 
-  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
-  const [showAppointmentSheet, setShowAppointmentSheet] = useState(false);
+  // Highlight para nuevas reservas
+  const prevAppointmentIds = useRef<Set<number>>(new Set());
+  const [highlightedIds, setHighlightedIds] = useState<Set<number>>(new Set());
+
+  useEffect(() => {
+    const currentIds = new Set(appointments.map(a => a.id));
+    const prevIds = prevAppointmentIds.current;
+    const newIds = new Set<number>();
+    appointments.forEach(a => {
+      if (!prevIds.has(a.id)) {
+        newIds.add(a.id);
+      }
+    });
+    if (newIds.size > 0) {
+      setHighlightedIds(new Set([...highlightedIds, ...newIds]));
+      setTimeout(() => {
+        setHighlightedIds(ids => {
+          const updated = new Set(ids);
+          newIds.forEach(id => updated.delete(id));
+          return updated;
+        });
+      }, 2000); // 2 segundos de highlight
+    }
+    prevAppointmentIds.current = currentIds;
+  }, [appointments]);
 
   return (
     <div>
@@ -102,7 +128,7 @@ export function CalendarView({ currentDate, appointments, onDayClick }: Calendar
         {/* Grid del calendario */}
         <div className="grid grid-cols-7 gap-4">
           {calendarDays.map((calendarDay, index) => {
-            const appointment = getAppointmentForDate(calendarDay.date)
+            const appointmentsForDay = getAppointmentsForDate(calendarDay.date)
             const isToday = calendarDay.date.toDateString() === new Date().toDateString()
 
             // Color de la franja según estado
@@ -111,11 +137,11 @@ export function CalendarView({ currentDate, appointments, onDayClick }: Calendar
                 case 'PENDIENTE':
                   return 'bg-yellow-100 text-yellow-800 border-yellow-300';
                 case 'CONFIRMADO':
-                  return 'bg-pink-100 text-pink-700 border-pink-300';
+                  return 'bg-blue-100 text-blue-700 border-blue-300';
                 case 'CANCELADO':
                   return 'bg-red-100 text-red-700 border-red-300';
                 default:
-                  return 'bg-blue-100 text-blue-700 border-blue-300';
+                  return 'bg-pink-100 text-pink-700 border-pink-300';
               }
             };
 
@@ -139,32 +165,33 @@ export function CalendarView({ currentDate, appointments, onDayClick }: Calendar
                   </span>
                 </div>
 
-                {/* Franja de reserva en la parte inferior */}
-                {appointment && (
-                  <div className="absolute left-2 right-2 bottom-2">
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div
-                          className={`w-full rounded-md px-2 py-1 text-xs font-semibold border flex items-center gap-1 cursor-pointer shadow-sm ${getStatusColor(appointment.status)}`}
-                          onClick={e => {
-                            e.stopPropagation();
-                            setSelectedAppointment(appointment);
-                            setShowAppointmentSheet(true);
-                          }}
-                        >
-                          <span className="font-mono text-[11px]">{appointment.time}</span>
-                          <span className="truncate">{appointment.client?.name || 'Cliente Generico'}</span>
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent sideOffset={8}>
-                        <div className="text-xs text-left">
-                          <div><b>Cliente:</b> {appointment.client?.name || 'Cliente Generico'}</div>
-                          <div><b>Hora:</b> {appointment.time}</div>
-                          <div><b>Estado:</b> {appointment.status}</div>
-                          {appointment.observation && <div><b>Obs.:</b> {appointment.observation}</div>}
-                        </div>
-                      </TooltipContent>
-                    </Tooltip>
+                {/* Franja de reservas en la parte inferior, una por cada reserva */}
+                {appointmentsForDay.length > 0 && (
+                  <div className="absolute left-2 right-2 bottom-2 flex flex-col gap-1">
+                    {appointmentsForDay.map((appointment) => (
+                      <Tooltip key={appointment.id}>
+                        <TooltipTrigger asChild>
+                          <div
+                            className={`w-full rounded-md px-2 py-1 text-xs font-semibold border flex items-center gap-1 cursor-pointer shadow-sm ${getStatusColor(appointment.status)} ${highlightedIds.has(appointment.id) ? 'bg-green-100 animate-pulse' : ''}`}
+                            onClick={e => {
+                              e.stopPropagation();
+                              setSelectedAppointment(appointment);
+                            }}
+                          >
+                            <span className="font-mono text-[11px]">{appointment.time}</span>
+                            <span className="truncate">{appointment.client?.name || 'Cliente Generico'}</span>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent sideOffset={8}>
+                          <div className="text-xs text-left">
+                            <div><b>Cliente:</b> {appointment.client?.name || 'Cliente Generico'}</div>
+                            <div><b>Hora:</b> {appointment.time}</div>
+                            <div><b>Estado:</b> {appointment.status}</div>
+                            {appointment.observation && <div><b>Obs.:</b> {appointment.observation}</div>}
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
+                    ))}
                   </div>
                 )}
               </div>
@@ -173,7 +200,7 @@ export function CalendarView({ currentDate, appointments, onDayClick }: Calendar
         </div>
       </div>
       {/* Sheet lateral para detalles de cita */}
-      <Sheet open={showAppointmentSheet} onOpenChange={setShowAppointmentSheet}>
+      <Sheet open={!!selectedAppointment} onOpenChange={open => { if (!open) setSelectedAppointment(null); }}>
         <SheetContent side="right" className="max-w-md w-full">
           <SheetTitle className="sr-only">Detalle de la cita</SheetTitle>
           {selectedAppointment && (
@@ -240,9 +267,7 @@ export function CalendarView({ currentDate, appointments, onDayClick }: Calendar
                       <DropdownMenuItem>
                         <RefreshCw className="w-4 h-4 mr-2" /> Reprogramar
                       </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Copy className="w-4 h-4 mr-2" /> Haz una copia
-                      </DropdownMenuItem>
+                     
                       <DropdownMenuItem className="text-red-600 bg-red-50">
                         <UserX className="w-4 h-4 mr-2" /> Ausencia
                       </DropdownMenuItem>

@@ -51,17 +51,6 @@ export function CalendarHeader({ currentDate, onDateChange }: CalendarHeaderProp
           </Button>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Button variant="outline" className="text-orange-600 border-orange-200 hover:bg-orange-50 hover:text-orange-600 bg-transparent">
-            <Filter className="w-4 h-4 mr-2" />
-            Más filtros
-          </Button>
-
-          <Button variant="ghost" className="text-gray-600">
-            <X className="w-4 h-4 mr-2" />
-            Limpiar filtros
-          </Button>
-        </div>
       </div>
 
       <Button variant="outline" className="text-orange-600 border-orange-200 hover:bg-orange-50 bg-transparent hover:text-orange-600">
