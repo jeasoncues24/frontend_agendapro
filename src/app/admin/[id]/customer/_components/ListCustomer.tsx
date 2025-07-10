@@ -8,13 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import {
   Search,
   Download,
-  Plus,
   MoreHorizontal,
-  CheckCircle,
-  Circle,
-  Clock,
-  AlertCircle,
-  FileText,
   CirclePlus,
 } from "lucide-react"
 import Image from "next/image"
@@ -39,7 +33,7 @@ export default function ListCustomer({ companyId, establishmentId }: { companyId
   const [currentPage, setCurrentPage] = useState(1)
   const { customers, isLoading, error } = useCustomers(companyId, establishmentId, refreshKey);
 
-  const filteredInquiries = customers.filter(( customer: any ) => customer.name?.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredInquiries: any[] = customers.filter(( customer: any ) => customer.name?.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
     <>
@@ -111,7 +105,7 @@ export default function ListCustomer({ companyId, establishmentId }: { companyId
                 </p>
                 {!searchTerm && (
                   <Button
-                    className="flex items-center space-x-2"
+                    className="flex items-center space-x-2 h-12"
                   >
                     <CirclePlus className="w-4 h-4" />
                     <span>Crear mi primer cliente</span>
@@ -125,25 +119,19 @@ export default function ListCustomer({ companyId, establishmentId }: { companyId
                     <TableRow>
                       <TableHead className="w-4"></TableHead>
                       <TableHead>Nombres</TableHead>
-                      <TableHead>Apellidos</TableHead>
                       <TableHead>Email</TableHead>
+                      <TableHead>Celular</TableHead>
                       <TableHead>Estado</TableHead>
                       <TableHead className="w-4"></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredInquiries.map((inquiry) => (
-                      <TableRow>
+                    {filteredInquiries.map((inquiry, idx) => (
+                      <TableRow key={inquiry.id || idx}>
                         <TableCell></TableCell>
-                        <TableCell className="font-medium text-gray-900"></TableCell>
-                        <TableCell className="text-gray-600"></TableCell>
-                        <TableCell>
-                          <div>
-                            <div className="font-medium text-gray-900"></div>
-                            <div className="text-sm text-gray-500"></div>
-                          </div>
-                        </TableCell>
-                        <TableCell></TableCell>
+                        <TableCell className="font-medium text-gray-900">{inquiry.name}</TableCell>
+                        <TableCell className="font-medium text-gray-900">{inquiry.email}</TableCell>
+                        <TableCell className="font-medium text-gray-900">{inquiry.phone}</TableCell>
                         <TableCell>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>

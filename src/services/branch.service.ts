@@ -63,5 +63,39 @@ export const getInformationBranch = async ( tradename: string, branch: string ) 
     return await response.json();
 }
 
+export const getBranchStatus = async (branchId: string): Promise<number> => {
+    const endpoint = getEndpoint();
+    const token = getToken();
+    const response = await fetch(`${endpoint}/branches/status/${branchId}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+    });
+    if (!response.ok) {
+        throw new Error('Error al obtener el estado de la sucursal');
+    }
+    const data = await response.json();
+    return data.data.opening_establishment;
+};
+
+// Actualizar el estado de apertura/cierre de la sucursal
+export const updateBranchStatus = async (branchId: string, status: number): Promise<void> => {
+    const endpoint = getEndpoint();
+    const token = getToken();
+    const response = await fetch(`${endpoint}/branches/update-status/${branchId}`, {
+        method: 'PUT',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status }),
+    });
+    if (!response.ok) {
+        throw new Error('Error al actualizar el estado de la sucursal');
+    }
+};
+
 
 

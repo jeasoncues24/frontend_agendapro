@@ -17,6 +17,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { PiSignOutBold } from "react-icons/pi";
 import { useBranchStore } from "@/store/branchStore";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getBranchStatus } from "@/services/branch.service";
 
 function HeaderComponent() {
     const [branch, setBranch] = useState<Branch | null>(null);
@@ -26,6 +27,7 @@ function HeaderComponent() {
     const [dropdownOpen, setDropdownOpen] = useState(false)
     const [isEmail, setIsEmail] = useState("")
     const [isUser, setIsUser] = useState("");
+    const isOpen = useBranchStore((state) => state.isOpen);
 
     useEffect(() => {
         const user = cookies.get("user");
@@ -207,6 +209,18 @@ function HeaderComponent() {
                     </Popover>
 
                     <div className="flex justify-start gap-4 items-center">
+
+                        {/* Estado de la tienda: Abierta/Cerrada */}
+                        {branch?.id && (
+                            <div className="flex items-center gap-2">
+                                <span className={`inline-block w-3 h-3 rounded-full ${isOpen ? 'bg-green-500' : 'bg-gray-400'}`}></span>
+                                <span className={`font-semibold text-xs ${isOpen ? 'text-green-600' : 'text-gray-500'}`}>
+                                    {isOpen === null ? <Skeleton className="h-4 w-12 rounded" /> : isOpen ? 'Online' : 'Offline'}
+                                </span>
+                            </div>
+                        )}
+                        {/* FIN Estado de la tienda */}
+
                         <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" className="p-0 rounded-full" onClick={() => setDropdownOpen(true)}>

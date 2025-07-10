@@ -23,7 +23,7 @@ export default function CustomerPage() {
                 setEstablishmentId(selectedBranch);
             }
         }
-    }, [branchIdFormUrl])
+    }, [selectedBranch])
 
     return ( 
         <div className="min-h-screen bg-gray-100 text-gray-900 p-8">

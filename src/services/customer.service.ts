@@ -13,7 +13,7 @@ const getToken = () => {
 export const getCustomers = async ( establishment_id?: string ) => {
     const endpoint = getEndpoint();
 
-    const url = new URL(`${endpoint}/customer/${establishment_id}`);
+    const url = new URL(`${endpoint}/customer/actives/${establishment_id}`);
     const response = await fetch(url.toString(), {
         headers: {
             'Content-Type': 'application/json'

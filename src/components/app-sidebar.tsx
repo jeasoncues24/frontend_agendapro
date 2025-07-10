@@ -105,6 +105,11 @@ const data = {
       icon: Clock3
     },
     {
+      title: "Mi sucursal",
+      url: "opening-times",
+      icon: Store
+    },
+    {
       title: "Configuración",
       url: "#",
       icon: Settings,
