@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { X, Plus, Loader2, Heart, Share2, ShoppingBasket } from "lucide-react"
+import { X, Plus, Loader2, Heart, Share2, CheckCircle, XCircle } from "lucide-react"
 import DateTimeSelection from "@/components/date-time-selection"
 import ConfirmationPage from "@/components/confirmation-page"
 import BookingModeSelection from "@/components/booking-mode-selection"
@@ -27,6 +27,9 @@ import CustomerForm from "./_components/CustomerForm";
 import { useCreateQuote } from "@/hooks/useQuotes";
 import { searchCustomers, createCustomer } from "@/services/customer.service";
 import { customToast } from "@/components/ui/custom-toast"
+import { useBranchStore } from "@/store/branchStore";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useRouter } from "next/navigation";
 
 interface Service {
   id: string
@@ -235,13 +238,11 @@ export default function SalonBooking() {
     let customer = null;
     try {
       const results = await searchCustomers(data.email);
-      // Si el backend retorna un array dentro de .data:
       const arr = Array.isArray(results?.data) ? results.data : results;
       customer = arr.find((c: any) => c.email === data.email) || null;
     } catch (e) {
       customer = null;
     }
-    // Si no existe, crearlo
     if (!customer) {
       try {
         const created = await createCustomer({
@@ -326,96 +327,93 @@ export default function SalonBooking() {
     }))
   }
 
+  let mainContent: React.ReactNode | null = null;
+
   if (currentStep === "booking-mode") {
-    if (!branchData) return null;
-    return (
-      <BookingModeSelection
-        cart={cart}
-        onSelect={handleBookingModeSelect}
-        onBack={handleBack}
-        logoUrl={branchData?.company.logo_path ? `${process.env.NEXT_PUBLIC_ROUTE_UPLOADS_DEV}${branchData.company.logo_path}` : ""}
-        branchName={branchData.branch?.name}
-        branchUbication={branchData.branch?.ubication}
-      />
-    )
-  }
-
-  if (currentStep === "multi-service") {
-    // Si MultiServiceFlow requiere profesionales, pásale un array vacío o la data dinámica si aplica
-    return (
-      <MultiServiceFlow cart={cart} professionals={[]} onComplete={handleBookAnother} onBack={handleBack} />
-    )
-  }
-
-  if (currentStep === "datetime") {
-    if (!branchData) return null;
-    const currentService = bookingData.service;
-    const cartItem = cart.find(item => item.service.id === currentService.id);
-    const quantity = cartItem ? cartItem.quantity : 1;
-    return (
-      <DateTimeSelection
-        service={bookingData.service}
-        onSelect={handleDateTimeSelect}
-        onBack={handleBack}
-        logoUrl={branchData?.company.logo_path ? `${process.env.NEXT_PUBLIC_ROUTE_UPLOADS_DEV}${branchData.company.logo_path}` : ""}
-        branchName={branchData.branch?.name}
-        branchUbication={branchData.branch?.ubication}
-        quantity={quantity}
-        cart={cart}
-        shifts={shifts}
-      />
-    )
-  }
-
-  // Antes de renderizar ProfessionalSelection, asegura que todos los profesionales tengan initials obligatoria
-  const safeProfessionals: Professional[] = availableProfessionals.map(pro => {
-    if ((pro as Professional).user && (pro as Professional).user.name) {
-      return {
-        ...pro,
-        initials: (pro as Professional).initials ?? (pro as Professional).user.name.split(' ').map((n: string) => n[0]).join(''),
-      };
-    } else if ((pro as any).name) {
-      return {
-        id: pro.id,
-        user: { id: pro.id, name: (pro as any).name },
-        initials: (pro as any).name.split(' ').map((n: string) => n[0]).join(''),
-      };
+    if (!branchData) mainContent = null;
+    else {
+      mainContent = (
+        <BookingModeSelection
+          cart={cart}
+          onSelect={handleBookingModeSelect}
+          onBack={handleBack}
+          logoUrl={branchData?.company?.logo_path ? `${process.env.NEXT_PUBLIC_ROUTE_UPLOADS_DEV}${branchData?.company?.logo_path}` : ""}
+          branchName={branchData?.branch?.name}
+          branchUbication={branchData?.branch?.ubication}
+        />
+      );
     }
-    return pro as Professional;
-  });
-
-  if (currentStep === "professional") {
-    if (!branchData) return null;
-    return (
-      <ProfessionalSelection
-        service={bookingData.service}
-        date={bookingData.date}
-        time={bookingData.time}
-        professionals={safeProfessionals}
-        onSelect={handleProfessionalSelect}
-        onBack={handleBack}
-        branchName={branchData.branch?.name}
-        logoUrl={branchData?.company.logo_path ? `${process.env.NEXT_PUBLIC_ROUTE_UPLOADS_DEV}${branchData.company.logo_path}` : ""}
-        cart={cart}
-        quantity={cart.find(item => item.service.id === bookingData.service?.id)?.quantity || 1}
-      />
-    )
-  }
-
-  if (currentStep === "customer") {
-    if (!branchData) return null;
-    return (
-      <CustomerForm
-        branchName={branchData.branch?.name}
-        logoUrl={branchData?.company.logo_path ? `${process.env.NEXT_PUBLIC_ROUTE_UPLOADS_DEV}${branchData.company.logo_path}` : ""}
-        onBack={() => setCurrentStep("professional")}
-        onSubmit={handleCustomerSubmit}
-      />
+  } else if (currentStep === "multi-service") {
+    // Si MultiServiceFlow requiere profesionales, pásale un array vacío o la data dinámica si aplica
+    mainContent = (
+      <MultiServiceFlow cart={cart} professionals={[]} onComplete={handleBookAnother} onBack={handleBack} />
     );
-  }
-
-  if (currentStep === "confirmation") {
-    return (
+  } else if (currentStep === "datetime") {
+    if (!branchData) mainContent = null;
+    else {
+      const currentService = bookingData.service;
+      const cartItem = cart.find(item => item.service.id === currentService.id);
+      const quantity = cartItem ? cartItem.quantity : 1;
+      mainContent = (
+        <DateTimeSelection
+          service={bookingData.service}
+          onSelect={handleDateTimeSelect}
+          onBack={handleBack}
+          logoUrl={branchData?.company?.logo_path ? `${process.env.NEXT_PUBLIC_ROUTE_UPLOADS_DEV}${branchData?.company?.logo_path}` : ""}
+          branchName={branchData?.branch?.name}
+          branchUbication={branchData?.branch?.ubication}
+          quantity={quantity}
+          cart={cart}
+          shifts={shifts}
+        />
+      );
+    }
+  } else if (currentStep === "professional") {
+    if (!branchData) mainContent = null;
+    else {
+      const safeProfessionals: Professional[] = availableProfessionals.map(pro => {
+        if ((pro as Professional).user && (pro as Professional).user.name) {
+          return {
+            ...pro,
+            initials: (pro as Professional).initials ?? (pro as Professional).user.name.split(' ').map((n: string) => n[0]).join(''),
+          };
+        } else if ((pro as any).name) {
+          return {
+            id: pro.id,
+            user: { id: pro.id, name: (pro as any).name },
+            initials: (pro as any).name.split(' ').map((n: string) => n[0]).join(''),
+          };
+        }
+        return pro as Professional;
+      });
+      mainContent = (
+        <ProfessionalSelection
+          service={bookingData.service}
+          date={bookingData.date}
+          time={bookingData.time}
+          professionals={safeProfessionals}
+          onSelect={handleProfessionalSelect}
+          onBack={handleBack}
+          branchName={branchData?.branch?.name}
+          logoUrl={branchData?.company?.logo_path ? `${process.env.NEXT_PUBLIC_ROUTE_UPLOADS_DEV}${branchData?.company?.logo_path}` : ""}
+          cart={cart}
+        />
+      );
+    }
+  } else if (currentStep === "customer") {
+    if (!branchData) mainContent = null;
+    else {
+      mainContent = (
+        <CustomerForm
+          branchName={branchData?.branch?.name}
+          logoUrl={branchData?.company?.logo_path ? `${process.env.NEXT_PUBLIC_ROUTE_UPLOADS_DEV}${branchData?.company?.logo_path}` : ""}
+          onBack={() => setCurrentStep("professional")}
+          onSubmit={handleCustomerSubmit}
+        />
+      );
+    }
+  } else if (currentStep === "confirmation") {
+    mainContent = (
       <ConfirmationPage
         bookingData={bookingData}
         customerData={customerData}
@@ -423,6 +421,369 @@ export default function SalonBooking() {
         branchUbication={branchData?.branch?.ubication}
         branchName={branchData?.branch?.name}
       />
+    );
+  } else {
+    // ...tu UI principal aquí...
+    mainContent = (
+      <div className="min-h-screen">
+        {/* Fullscreen Handler */}
+        {/* <FullscreenHandler /> */}
+        {showSplash ? (
+          <SplashScreen
+            key="splash"
+            onComplete={() => setShowSplash(false)}
+            logoUrl={branchData?.company?.logo_path ? `${process.env.NEXT_PUBLIC_ROUTE_UPLOADS_DEV}${branchData?.company?.logo_path}` : ""}
+            companyName={branchData?.company?.trade_name}
+          />
+        ) : (
+          <>
+            {/* <HeaderTradeName /> */}
+            <div className="max-w-full mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                {/* Banner superior tipo hero */}
+                <div className="relative w-full h-44 pt-8">
+                  {/* Imagen banner */}
+                  <Image src={branchData?.branch?.banner_path ? `${process.env.NEXT_PUBLIC_ROUTE_UPLOADS_DEV}${branchData?.branch?.banner_path}` : "/images/banner-salon.webp"} alt={branchData?.branch?.name || "Sucursal"} fill priority />
+                  <div className="absolute inset-0 bg-black/10" />
+                  <div
+                    className="absolute top-0 left-0 w-full flex justify-between items-center p-4 z-10 mt-4"
+                    style={{ paddingTop: "env(safe-area-inset-top, 2rem)" }}
+                  >
+                    <button className="bg-white/80 rounded-full p-2 mt-4 shadow">
+                      <X className="w-5 h-5 text-black" />
+                    </button>
+                    {/* <div className="flex gap-2">
+                      {!isOpen && (
+                        <div className="mx-auto text-center mt-4">
+                          <span
+                            className={`inline-flex items-center gap-2 px-3 py-1 rounded-xl text-xs font-semibold bg-red-100 text-red-500`}
+                            style={{ minWidth: 80, justifyContent: 'center' }}
+                          >
+                            Offline
+                          </span>
+                        </div>
+                      )}
+                    </div> */}
+                  </div>
+                </div>
+
+                {/* Business Info */}
+                <div className="bg-white">
+                  <div className="p-6">
+                    <div className="flex items-center gap-6">
+                      <Image
+                        src={branchData?.company?.logo_path ? `${process.env.NEXT_PUBLIC_ROUTE_UPLOADS_DEV}${branchData?.company?.logo_path}` : "/placeholder.svg"}
+                        alt={branchData?.branch?.name || "Sucursal"}
+                        height={60}
+                        width={60}
+                        className="mb-2 rounded-xl shadow-2xl"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3">
+                          <h1 className="text-xl font-bold text-gray-900">{branchData?.branch?.name}</h1>
+                         
+                        </div>
+                        <p className="text-gray text-xs">{branchData?.branch?.ubication}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+               
+
+                <div className="w-full flex flex-col gap-3 px-6">
+                  {/* Tabs */}
+                  <div className="w-full flex bg-gray-100 rounded-full p-1">
+                    <button className="flex-1 py-2 rounded-full bg-white font-semibold text-gray-900 shadow text-sm">
+                      Domicilio
+                    </button>
+                    <button className="flex-1 py-2 rounded-full text-gray-500 text-sm">En tienda</button>
+                  </div>
+
+                  {/* Banner promo */}
+                  <div className="w-full bg-[#DCE9FC] rounded-xl px-4 py-3 flex items-center gap-3">
+                    <div className="bg-blue-100 rounded-full p-2">
+                      <span className="material-icons text-blue-500">
+                        <RiDiscountPercentFill className="h-10 w-8" />{" "}
+                      </span>
+                    </div>
+                    <div>
+                      <div className="text-blue-900 font-semibold text-sm">Hasta 71% OFF imperdible</div>
+                      <div className="text-xs text-blue-800">
+                        Disfruta este descuento en tu pedido y recíbelo en minutos.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Servicios */}
+                <div className={`mb-8 px-2 mt-4 ${cart.length > 0 ? "pb-32" : "pb-8"}`}>
+                  {/* Nueva barra de categorías tipo tabs con scroll */}
+                  {!branchData?.branch?.id ? (
+                    <div className="text-gray-400 px-4 py-2">Cargando sucursal...</div>
+                  ) : loading ? (
+                    <div className="text-gray-400 px-4 py-2">Cargando categorías...</div>
+                  ) : error ? (
+                    <div className="text-red-500 px-4 py-2">Error: {error}</div>
+                  ) : categoriesData && categoriesData.length > 0 ? (
+                    <div className="overflow-x-auto scrollbar-hide">
+                      <ul className="flex gap-6 border-b border-gray-200 mb-4">
+                        <li>
+                          <button
+                            onClick={() => setSelectedCategory("all")}
+                            className={`pb-2 px-1 text-base whitespace-nowrap transition-all ${selectedCategory === "all" ? "font-bold text-gray-900 border-b-4 border-black" : "font-normal text-gray-400"}`}
+                          >
+                            Todas
+                          </button>
+                        </li>
+                        {categoriesData.map((category: any) => (
+                          <li key={category.id}>
+                            <button
+                              onClick={() => setSelectedCategory(category.id)}
+                              className={`pb-2 px-1 text-base whitespace-nowrap transition-all ${selectedCategory === category.id ? "font-bold text-gray-900 border-b-4 border-black" : "font-normal text-gray-400"}`}
+                            >
+                              {category.name}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : (
+                    <div className="text-gray-400 px-4 py-2">No hay categorías</div>
+                  )}
+
+                  <div className="overflow-x-auto scrollbar-hide py-2 mt-4">
+                    <div className="flex flex-row gap-4 min-w-max">
+                      {loadingProducts ? (
+                        <div className="text-gray-400 px-4 py-2">Cargando servicios...</div>
+                      ) : errorProducts ? (
+                        <div className="text-red-500 px-4 py-2">{errorProducts}</div>
+                      ) : products.length === 0 ? (
+                        <div className="text-gray-400 px-4 py-2">No hay servicios</div>
+                      ) : (
+                        products.map((service) => {
+                          const cartItem = cart.find((item) => item.service.id === service.id)
+                          const quantity = cartItem?.quantity || 0
+                          return (
+                            <div
+                              key={service.id}
+                              className="relative border-none bg-white"
+                              style={{ minWidth: 130, maxWidth: 130 }}
+                            >
+                              <div className="relative w-full h-32">
+                                <Image
+                                  src={
+                                    service.image
+                                      ? `${process.env.NEXT_PUBLIC_ROUTE_UPLOADS_DEV}${service.image}`
+                                      : "/images/banner-salon.webp"
+                                  }
+                                  alt={service.name}
+                                  fill
+                                  className="object-cover rounded-lg"
+                                />
+                                {quantity === 0 ? (
+                                  <button
+                                    onClick={() => setModalServicio({ open: true, servicio: service })}
+                                    className="absolute -top-2 -right-2 bg-[#33C955] rounded-full p-1.5 shadow-lg hover:bg-[#33C955] transition flex items-center justify-center"
+                                    style={{ zIndex: 2 }}
+                                  >
+                                    <Plus className="w-6 h-6 text-white" />
+                                  </button>
+                                ) : (
+                                  <button
+                                    onClick={() => setModalServicio({ open: true, servicio: service })}
+                                    className="absolute -top-2 -right-2 bg-[#33C955] rounded-full p-1.5 shadow-lg hover:bg-[#33C955] transition"
+                                    style={{ zIndex: 2 }}
+                                  >
+                                    <span className="text-white p-2">{quantity}</span>
+                                  </button>
+                                )}
+                              </div>
+                              <div className="p-3 flex flex-col items-start">
+                                <span className="text-md font-bold">S/{service.price.toFixed(2)}</span>
+                                <span className="text-sm">{service.name}</span>
+                              </div>
+                            </div>
+                          )
+                        })
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* <div className={`space-y-6 ${cart.length > 0 ? "pb-32 lg:pb-6" : "pb-6"}`}>
+                <CollaboratorComponent professional={professionals} />
+              </div> */}
+            </div>
+
+            {/* Fixed Cart Bottom Bar - Mejorado */}
+            {cart.length > 0 && (
+              <div
+                className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md z-40 shadow-2xl border-t border-gray-100"
+                style={{
+                  paddingBottom: "max(env(safe-area-inset-bottom, 0px), 16px)",
+                  paddingTop: "12px",
+                }}
+              >
+                <div className="flex items-center justify-between px-4 max-w-2xl mx-auto">
+                  <div className="flex items-center gap-3">
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-gray-700">
+                        {getTotalServices()} servicio{getTotalServices() > 1 ? "s" : ""}
+                      </span>
+                      <span className="text-2xl font-bold text-gray-900">S/{getTotalPrice().toFixed(2)}</span>
+                    </div>
+                  </div>
+                  <Button
+                    onClick={() => setShowCart(true)}
+                    className="bg-[#33C955] hover:bg-[#28a745] text-white text-lg font-bold rounded-full px-8 py-3 shadow-xl h-14"
+                  >
+                    Ir a agendar
+                  </Button>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
+        {modalServicio.open && modalServicio.servicio && (
+          <ModalDetalleServicio
+            servicio={modalServicio.servicio}
+            onClose={() => setModalServicio({ open: false, servicio: null })}
+            onAddToCart={(servicio, cantidad) => {
+              const service = mapProductToService(servicio)
+              setCart((prev) => {
+                const existingItem = prev.find((item) => item.service.id === service.id)
+                if (existingItem) {
+                  return prev.map((item) =>
+                    item.service.id === service.id ? { ...item, quantity: item.quantity + cantidad } : item,
+                  )
+                }
+                return [...prev, { service, quantity: cantidad }]
+              })
+              setModalServicio({ open: false, servicio: null })
+            }}
+          />
+        )}
+
+        {showCart && (
+          <div className="fixed inset-0 z-50 bg-black/30 flex flex-col items-center justify-end md:justify-center">
+            <div
+              className="bg-white shadow-xl fixed bottom-0 left-0 right-0 rounded-t-2xl w-full max-w-none mx-auto md:relative md:bottom-auto md-left-auto md:right-auto md:rounded-2xl md:w-full md:max-w-md overflow-hidden flex flex-col"
+              style={{
+                height: "min(88vh, calc(100vh - env(safe-area-inset-top, 0px)))",
+                paddingBottom: "env(safe-area-inset-bottom, 0px)",
+              }}
+            >
+              <div className="flex items-center justify-between px-4 py-4 border-b">
+                <span className="text-lg font-bold">Tu carrito</span>
+                <div className="flex items-center gap-2">
+                  <button
+                    className="bg-gray-100 rounded-full px-4 py-1 text-sm font-semibold text-gray-700"
+                    onClick={() => setCart([])}
+                  >
+                    Vaciar
+                  </button>
+                  <button className="bg-gray-100 rounded-full p-2" onClick={() => setShowCart(false)}>
+                    <X className="w-6 h-6 text-black" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Lista de servicios */}
+              <div className="flex-1 overflow-y-auto px-4 py-2">
+                {cart.length === 0 ? (
+                    <div className="text-center text-gray-400 py-12">Tu canasta está vacía</div>
+                ) : (
+                  cart.map((item, idx) => (
+                    <div key={item.service.id} className="flex items-center gap-3 py-4 border-b last:border-b-0">
+                      <div className="w-14 h-14 rounded-xl relative overflow-hidden flex items-center justify-center">
+                        {/* Imagen de fondo con blur */}
+                        <Image
+                          src={
+                            item.service.image
+                              ? `${process.env.NEXT_PUBLIC_ROUTE_UPLOADS_DEV}${item.service.image}`
+                              : "/images/banner-salon.webp"
+                          }
+                          alt={item.service.name}
+                          fill
+                          className="object-cover blur-sm scale-110 opacity-60"
+                          style={{ zIndex: 1 }}
+                        />
+                        {/* Imagen principal centrada */}
+                        <Image
+                          src={
+                            item.service.image
+                              ? `${process.env.NEXT_PUBLIC_ROUTE_UPLOADS_DEV}${item.service.image}`
+                              : "/images/banner-salon.webp"
+                          }
+                          alt={item.service.name}
+                          width={40}
+                          height={40}
+                          className="object-contain rounded-lg z-10"
+                          style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.10)" }}
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-base truncate">{item.service.name}</span>
+                        </div>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-lg font-bold">S/{item.service.price.toFixed(2)}</span>
+                        </div>
+                        <div className="text-xs text-gray-500 truncate">{item.service.duration} hora(s)</div>
+                      </div>
+                      <div className="flex flex-col items-center gap-2">
+                        <div className="flex items-center border rounded-full px-2 py-1 bg-gray-50 justify-center gap-1">
+                          {item.quantity === 1 ? (
+                            <button
+                              className="flex items-center justify-center w-8 h-8 text-black hover:text-red-500 transition"
+                              onClick={() => removeFromCart(item.service.id)}
+                            >
+                              <LuTrash className="w-5 h-5" />
+                            </button>
+                          ) : (
+                            <button
+                              className="flex items-center justify-center w-8 h-8 text-xl"
+                              onClick={() => updateQuantity(item.service.id, item.quantity - 1)}
+                            >
+                              -
+                            </button>
+                          )}
+                          <span className="w-6 text-center font-medium text-base">{item.quantity}</span>
+                          <button
+                            className="flex items-center justify-center w-8 h-8 text-black transition"
+                            onClick={() => updateQuantity(item.service.id, item.quantity + 1)}
+                          >
+                            <FaPlus className="w-3 h-5" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              <div className="border-t bg-white px-4 py-4 sticky bottom-0 z-10">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex flex-col">
+                    <span className="text-base font-medium text-gray-700">Subtotal</span>
+                    <span className="text-2xl font-bold text-gray-900">S/{getTotalPrice().toFixed(2)}</span>
+                  </div>
+                  <Button
+                    className="bg-[#33C955] hover:bg-[#28a745] text-white text-lg font-bold rounded-full px-10 py-5 shadow-lg h-16 flex items-center justify-center"
+                    style={{ minWidth: "160px" }}
+                    onClick={handleProceedToBooking}
+                  >
+                    Continuar
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     );
   }
 
@@ -438,18 +799,39 @@ export default function SalonBooking() {
     return <EmptyBranchPage />
   }
 
-  const bannerUrl = branchData?.branch.banner_path
+  const bannerUrl = branchData?.branch?.banner_path
     ? `${process.env.NEXT_PUBLIC_ROUTE_UPLOADS_DEV}${branchData.branch.banner_path}`
     : "/images/banner-salon.webp"
 
-  const logoUrl = branchData?.company.logo_path
+  const logoUrl = branchData?.company?.logo_path
     ? `${process.env.NEXT_PUBLIC_ROUTE_UPLOADS_DEV}${branchData.company.logo_path}`
     : ""
 
+  const isOpen = branchData?.branch?.opening_establishment
 
   return (
-    <div className="min-h-screen">
-      {/* Fullscreen Handler */}
+    <>
+      {/* Modal de tienda cerrada */}
+      { 
+        !isOpen && (
+         <>
+           <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/40">
+            <div className="bg-white w-full md:max-w-md rounded-t-2xl md:rounded-2xl shadow-xl p-6 pb-8 md:pb-6 mx-auto animate-slide-up relative">
+              <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-4 md:hidden" />
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">La tienda no se encuentra disponible.</h2>
+              <p className="text-gray-500 mb-6">Conoce y disfruta de opciones similares:</p>
+              {/* Aquí podrías mapear sugerencias si tienes, por ahora solo el botón */}
+              <button
+                className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded-full h-16 text-lg transition-colors mt-2"
+              >
+                Volver a inicio
+              </button>
+            </div>
+          </div>
+         </>
+        )
+      }
+
       {/* <FullscreenHandler /> */}
       {showSplash ? (
         <SplashScreen
@@ -466,23 +848,16 @@ export default function SalonBooking() {
               {/* Banner superior tipo hero */}
               <div className="relative w-full h-44 pt-8">
                 {/* Imagen banner */}
-                <Image src={bannerUrl || "/placeholder.svg"} alt={branchData.branch.name} fill priority />
+                <Image src={bannerUrl || "/placeholder.svg"} alt={branchData.branch.name || "Sucursal"} fill priority />
                 <div className="absolute inset-0 bg-black/10" />
                 <div
                   className="absolute top-0 left-0 w-full flex justify-between items-center p-4 z-10 mt-4"
                   style={{ paddingTop: "env(safe-area-inset-top, 2rem)" }}
                 >
-                  <button className="bg-white/80 rounded-full p-2 shadow">
+                  <button className="bg-white/80 rounded-full p-2 mt-4 shadow">
                     <X className="w-5 h-5 text-black" />
                   </button>
-                  <div className="flex gap-2">
-                    <button className="bg-white/80 rounded-full p-2 shadow">
-                      <Share2 className="w-5 h-5 text-black" />
-                    </button>
-                    <button className="bg-white/80 rounded-full p-2 shadow">
-                      <Heart className="w-5 h-5 text-black" />
-                    </button>
-                  </div>
+                 
                 </div>
               </div>
 
@@ -492,20 +867,37 @@ export default function SalonBooking() {
                   <div className="flex items-center gap-6">
                     <Image
                       src={logoUrl || "/placeholder.svg"}
-                      alt={branchData.branch.name}
+                      alt={branchData.branch.name || "Sucursal"}
                       height={60}
                       width={60}
                       className="mb-2 rounded-xl shadow-2xl"
                     />
                     <div className="flex-1">
-                      <div>
+                      <div className="flex items-center gap-3">
                         <h1 className="text-xl font-bold text-gray-900">{branchData.branch.name}</h1>
-                        <p className="text-gray text-xs">{branchData.branch.ubication}</p>
+                       
                       </div>
+                      <p className="text-gray text-xs">{branchData.branch.ubication}</p>
                     </div>
                   </div>
                 </div>
               </div>
+
+
+              <div className="flex gap-2 mb-6">
+                {!isOpen && (
+                  <div className="mx-auto text-center">
+                    <span
+                      className={`inline-flex items-center gap-2 px-3 py-1 rounded-xl text-xs font-semibold bg-red-100 text-red-500`}
+                      style={{ minWidth: 80, justifyContent: 'center' }}
+                    >
+                      Temporalmente no disponible
+                    </span>
+                  </div>
+                )}
+              </div>
+
+             
 
               <div className="w-full flex flex-col gap-3 px-6">
                 {/* Tabs */}
@@ -535,7 +927,7 @@ export default function SalonBooking() {
               {/* Servicios */}
               <div className={`mb-8 px-2 mt-4 ${cart.length > 0 ? "pb-32" : "pb-8"}`}>
                 {/* Nueva barra de categorías tipo tabs con scroll */}
-                {!branchData?.branch.id ? (
+                {!branchData?.branch?.id ? (
                   <div className="text-gray-400 px-4 py-2">Cargando sucursal...</div>
                 ) : loading ? (
                   <div className="text-gray-400 px-4 py-2">Cargando categorías...</div>
@@ -799,6 +1191,6 @@ export default function SalonBooking() {
           </div>
         </div>
       )}
-    </div>
+    </>
   )
 }

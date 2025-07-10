@@ -99,11 +99,11 @@ const data = {
       url: "reports",
       icon: ChartNoAxesCombined
     },
-    {
-      title: "Estado de tu local",
-      url: "opening-times",
-      icon: Clock3
-    },
+    // {
+    //   title: "Estado de tu local",
+    //   url: "opening-times",
+    //   icon: Clock3
+    // },
     {
       title: "Mi sucursal",
       url: "opening-times",

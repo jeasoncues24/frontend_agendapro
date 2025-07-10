@@ -215,11 +215,10 @@ function HeaderComponent() {
                             <div className="flex items-center gap-2">
                                 <span className={`inline-block w-3 h-3 rounded-full ${isOpen ? 'bg-green-500' : 'bg-gray-400'}`}></span>
                                 <span className={`font-semibold text-xs ${isOpen ? 'text-green-600' : 'text-gray-500'}`}>
-                                    {isOpen === null ? <Skeleton className="h-4 w-12 rounded" /> : isOpen ? 'Online' : 'Offline'}
+                                    {isOpen === null ? <Skeleton className="h-4 w-12 rounded" /> : isOpen ? 'Activa' : 'Inactiva'}
                                 </span>
                             </div>
                         )}
-                        {/* FIN Estado de la tienda */}
 
                         <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
                             <DropdownMenuTrigger asChild>

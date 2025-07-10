@@ -16,6 +16,7 @@ export interface BranchData {
     name: string;
     ubication: string;
     banner_path: string;
+    opening_establishment: number;
 }
 
 export interface BranchApiResponse {
