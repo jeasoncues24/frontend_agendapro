@@ -1,9 +1,7 @@
 "use client";
 
-import { useBranchStore } from "@/store/branchStore";
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import cookies from "js-cookie";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { CreditCard, PlusCircle, UploadCloud, CheckCircle, FileText, Loader2, CheckCircle2 } from "lucide-react";
@@ -11,6 +9,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 import Image from "next/image";
 import { getInformationSubscription } from "@/services/subscription.service";
+import { SubscriptionInfo } from "@/types/subscription";
 
 const mockPlan = {
   name: "Plan Pro",
@@ -43,16 +42,7 @@ export default function FinancePage() {
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
-  type SubscriptionInfo = {
-    status?: string;
-    plan?: string;
-    precio?: number;
-    moneda?: string;
-    periodo?: string;
-    fechaVencimiento?: string;
-    diasRestantes?: number;
-    estado?: string;
-  };
+ 
   const [data, setData] = useState<SubscriptionInfo | null>(null);
 
   useEffect(() => {

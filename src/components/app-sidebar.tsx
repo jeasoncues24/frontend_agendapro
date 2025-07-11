@@ -14,6 +14,7 @@ import {
   Map,
   PieChart,
   Settings,
+  ShoppingCart,
   SquareActivity,
   Store,
   X,
@@ -59,11 +60,11 @@ const data = {
       url: "quotes",
       icon: Calendar,
     },
-    // {
-    //   title: "Ventas",
-    //   url: "sale",
-    //   icon: Store
-    // },
+    {
+      title: "Ventas",
+      url: "sale",
+      icon: ShoppingCart
+    },
     {
       title: "Servicios",
       url: "#",
@@ -130,10 +131,10 @@ const data = {
           title: "Usuarios",
           url: "settings/users"
         }, 
-        {
-          title: "Métodos de Pago",
-          url: "settings/payment"
-        },
+        // {
+        //   title: "Métodos de Pago",
+        //   url: "settings/payment"
+        // },
         {
           title: "Suscripción",
           url: "settings/subscription"
