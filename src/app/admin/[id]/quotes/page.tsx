@@ -237,7 +237,7 @@ export default function QuotesPage() {
             <Sheet open={showSheet} onOpenChange={setShowSheet}>
                 <SheetContent
                     side="right"
-                    className="w-full sm:max-w-lg"
+                    className="w-full sm:max-w-lg z-[9999]"
                 >
                     <SheetHeader>
                         <SheetTitle>Configuración inicial</SheetTitle>

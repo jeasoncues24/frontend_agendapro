@@ -133,6 +133,14 @@ const data = {
         {
           title: "Métodos de Pago",
           url: "settings/payment"
+        },
+        {
+          title: "Suscripción",
+          url: "settings/subscription"
+        },
+        {
+          title: "Financias",
+          url: "settings/finance"
         }
       ]
     },

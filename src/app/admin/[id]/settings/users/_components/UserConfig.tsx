@@ -343,7 +343,7 @@ export default function UserConfigComponent({ companyId, establishmentId }: { co
 
         {/* Sheet para ver información del usuario */}
         < Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen} >
-          <SheetContent>
+          <SheetContent className="z-[9999]">
             <SheetHeader>
               <SheetTitle>Información del usuario</SheetTitle>
             </SheetHeader>

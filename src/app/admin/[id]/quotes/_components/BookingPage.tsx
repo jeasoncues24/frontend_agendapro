@@ -749,7 +749,7 @@ export function BookingPage({ selectedDate, onBack, establishmentId }: BookingPa
 
       {/* Add Service Sheet */}
       <Sheet open={isAddServiceOpen} onOpenChange={setIsAddServiceOpen}>
-        <SheetContent side="right" className="w-full max-w-md sm:max-w-lg h-full">
+        <SheetContent side="right" className="w-full max-w-md sm:max-w-lg h-full z-[9999]">
           <SheetHeader className="pb-4">
             <SheetTitle className="text-left text-xl">Añadir servicio</SheetTitle>
           </SheetHeader>
